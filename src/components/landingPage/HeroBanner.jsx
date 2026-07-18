@@ -4,7 +4,7 @@ import { useAuth } from "../../context/AuthContext"
 import { useNavigate } from "react-router-dom"
 
 const HeroBanner = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   return (
     <section className="relative overflow-hidden">
       {/* Background Glow */}
@@ -80,7 +80,7 @@ const HeroBanner = () => {
           {/* Get Started */}
 
           <button
-            onClick={() => navigate("/dashboard/home")}
+            onClick={() => navigate("/dashboard/")}
             className="group flex items-center gap-3 rounded-xl bg-[#b8c4ff] px-8 py-4 font-semibold text-[#002584] shadow-[0_15px_40px_rgba(184,196,255,.25)] transition-all duration-300 hover:scale-105 hover:shadow-[0_20px_50px_rgba(184,196,255,.4)]"
           >
             Get Started

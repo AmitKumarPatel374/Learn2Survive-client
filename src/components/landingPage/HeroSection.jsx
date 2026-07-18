@@ -90,7 +90,7 @@ const HeroSection = () => {
               and recommended disaster awareness content.
             </p>
 
-            <button onClick={() => navigate("/dashboard/home")} className="rounded-xl bg-[#4edea3] py-3 font-bold text-[#003824] transition hover:brightness-110 active:scale-95">
+            <button onClick={() => navigate("/dashboard/")} className="rounded-xl bg-[#4edea3] py-3 font-bold text-[#003824] transition hover:brightness-110 active:scale-95">
               Go to Dashboard
             </button>
           </div>
@@ -114,7 +114,7 @@ const HeroSection = () => {
               learning, simulations, and AI-powered assistance.
             </p>
 
-            <button onClick={() => navigate("/dashboard/home")} className="rounded-xl border border-white/20 py-3 font-bold text-white transition hover:bg-white/5 active:scale-95">
+            <button onClick={() => navigate("/dashboard/")} className="rounded-xl border border-white/20 py-3 font-bold text-white transition hover:bg-white/5 active:scale-95">
               Explore More
             </button>
           </div>

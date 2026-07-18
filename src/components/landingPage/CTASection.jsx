@@ -35,7 +35,7 @@ const CTASection = () => {
 
             <div className="flex flex-col justify-center gap-4 sm:flex-row">
 
-              <button onClick={() => navigate("/dashboard/home")} className="rounded-xl bg-white px-10 py-4 font-bold text-[#1e40af] shadow-lg transition-all duration-300 hover:scale-105 hover:bg-[#dae2fd] active:scale-95">
+              <button onClick={() => navigate("/dashboard/")} className="rounded-xl bg-white px-10 py-4 font-bold text-[#1e40af] shadow-lg transition-all duration-300 hover:scale-105 hover:bg-[#dae2fd] active:scale-95">
                 Get Started
               </button>
 

@@ -1,14 +1,24 @@
-import React from 'react'
-import { Route, Routes } from 'react-router-dom'
-import Dashboard from '../pages/learning/Dashboard'
-import PageNotFound from '../pages/common/PageNotFound'
+import React from "react"
+import { Route, Routes } from "react-router-dom"
+import PageNotFound from "../pages/common/PageNotFound"
+import QuizPage from "../pages/learning/QuizPage"
+import QuizResultPage from "../pages/learning/QuizResultPage"
 
 const LearningRoutes = () => {
   return (
     <Routes>
-      <Route path="dashboard" element={<Dashboard />} />
-
-      <Route path="*" element={<PageNotFound />} />
+      <Route
+        path="quiz"
+        element={<QuizPage />}
+      />
+      <Route
+        path="quiz/result"
+        element={<QuizResultPage />}
+      />
+      <Route
+        path="*"
+        element={<PageNotFound />}
+      />
     </Routes>
   )
 }

@@ -11,14 +11,51 @@ import {
   LogOut,
 } from "lucide-react"
 import { useAuth } from "../../context/AuthContext"
+import { useNavigate, NavLink } from "react-router-dom"
 
 const SideLeftBar = () => {
   const { user, setUser } = useAuth()
+  const navigate = useNavigate()
 
   const avatarLetter =
     user?.fullName?.trim()?.charAt(0)?.toUpperCase() ||
     user?.email?.trim()?.charAt(0)?.toUpperCase() ||
     "U"
+
+  const menuItems = [
+    {
+      title: "Dashboard",
+      icon: Home,
+      path: "/dashboard",
+    },
+    {
+      title: "Learning Center",
+      icon: BookOpen,
+      path: "/dashboard/learning-center",
+    },
+    {
+      title: "Quizzes",
+      icon: Brain,
+      path: "/dashboard/quizzes",
+    },
+    {
+      title: "Simulations",
+      icon: Bot,
+      path: "/dashboard/simulations",
+    },
+
+    // Account Section
+    {
+      title: "Profile",
+      icon: User,
+      path: "/dashboard/profile",
+    },
+    {
+      title: "Emergency Contacts",
+      icon: Phone,
+      path: "/dashboard/emergency-contacts",
+    },
+  ]
 
   return (
     <aside className="fixed left-0 top-16 z-50 flex h-[calc(100vh-4rem)] w-72 flex-col border-r border-white/5 bg-[#171f33]/80 p-6 backdrop-blur-xl">
@@ -57,96 +94,34 @@ const SideLeftBar = () => {
       {/* Navigation */}
       <div className="flex-1 overflow-y-auto hide-scrollbar scroll-smooth">
         <nav className="flex flex-col gap-2">
-          {/* Home */}
+          {menuItems.map((item) => {
+            const Icon = item.icon
 
-          <a
-            href="#"
-            className="group flex items-center gap-4 rounded-xl bg-[#1e40af] px-4 py-3 font-semibold text-[#dde1ff] shadow-[0_0_15px_rgba(30,64,175,.3)] transition active:scale-95"
-          >
-            <Home
-              size={20}
-              className="transition group-hover:scale-110"
-              fill="currentColor"
-            />
-
-            <span>Home</span>
-          </a>
-
-          <p className=" mt-2 px-4 text-xs font-semibold uppercase tracking-[0.2em] text-[#6f7791]">
-            Learning
-          </p>
-          {/* Learning Center */}
-
-          <a
-            href="#"
-            className="group flex items-center gap-4 rounded-xl px-4 py-3 text-[#c4c5d5] transition hover:translate-x-1 hover:bg-[#2d3449]/50 hover:text-white"
-          >
-            <BookOpen
-              size={20}
-              className="transition group-hover:text-[#b8c4ff]"
-            />
-
-            <span>Learning Center</span>
-          </a>
-
-          {/* Quizzes */}
-
-          <a
-            href="#"
-            className="group flex items-center gap-4 rounded-xl px-4 py-3 text-[#c4c5d5] transition hover:translate-x-1 hover:bg-[#2d3449]/50 hover:text-white"
-          >
-            <Brain
-              size={20}
-              className="transition group-hover:text-[#b8c4ff]"
-            />
-
-            <span>Quizzes</span>
-          </a>
-
-          {/* Simulations */}
-
-          <a
-            href="#"
-            className="group flex items-center gap-4 rounded-xl px-4 py-3 text-[#c4c5d5] transition hover:translate-x-1 hover:bg-[#2d3449]/50 hover:text-white"
-          >
-            <Bot
-              size={20}
-              className="transition group-hover:text-[#b8c4ff]"
-            />
-
-            <span>Simulations</span>
-          </a>
-
-          <p className="mt-5 px-4 text-xs font-semibold uppercase tracking-[0.2em] text-[#6f7791]">
-            Account
-          </p>
-          {/* Profile */}
-
-          <a
-            href="#"
-            className="group flex items-center gap-4 rounded-xl px-4 py-3 text-[#c4c5d5] transition hover:translate-x-1 hover:bg-[#2d3449]/50 hover:text-white"
-          >
-            <User
-              size={20}
-              className="transition group-hover:text-[#b8c4ff]"
-            />
-
-            <span>Profile</span>
-          </a>
-
-          {/* Emergency Contacts */}
-
-          <a
-            href="#"
-            className="group flex items-center gap-4 rounded-xl px-4 py-3 text-[#c4c5d5] transition hover:translate-x-1 hover:bg-[#2d3449]/50 hover:text-white"
-          >
-            <Phone
-              size={20}
-              className="transition group-hover:text-[#b8c4ff]"
-            />
-
-            <span>Emergency Contacts</span>
-          </a>
+            return (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                end={item.path === "/dashboard"}
+                className={({ isActive }) =>
+                  `group flex items-center gap-4 rounded-xl px-4 py-3 transition ${
+                    isActive
+                      ? "bg-[#1e40af] font-semibold text-[#dde1ff]"
+                      : "text-[#c4c5d5] hover:bg-[#2d3449]/50 hover:text-white"
+                  }`
+                }
+              >
+                {({ isActive }) => (
+                  <>
+                    <Icon
+                      size={20}
+                      fill={isActive ? "currentColor" : "none"}
+                    />
+                    <span>{item.title}</span>
+                  </>
+                )}
+              </NavLink>
+            )
+          })}
         </nav>
       </div>
 

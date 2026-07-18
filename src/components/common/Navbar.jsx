@@ -4,12 +4,14 @@ import { toast } from "react-toastify"
 import { useNavigate } from "react-router-dom"
 import { useState } from "react"
 import { useAuth } from "../../context/AuthContext"
+import { useTheme } from "../../context/ThemeContext"
 
 const Navbar = () => {
   const [open, setOpen] = useState(false)
   const navigate = useNavigate()
 
   const { user, setUser } = useAuth()
+  const { theme, toggleTheme } = useTheme()
 
   const logoutHandler = async () => {
     try {
@@ -91,11 +93,11 @@ const Navbar = () => {
 
           {/* Theme Toggle */}
 
-          <button className="rounded-lg p-2 text-[#c4c5d5] transition hover:bg-white/5 active:scale-95">
-            <Sun size={20} />
-
-            {/* Agar dark/light functionality add karni ho */}
-            {/* <Moon size={20}/> */}
+          <button
+            onClick={toggleTheme}
+            className="rounded-lg p-2 text-[#c4c5d5] transition hover:bg-white/5 active:scale-95"
+          >
+            {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
           </button>
 
           {/* Profile */}
@@ -139,17 +141,26 @@ const Navbar = () => {
                   </p>
                 </div>
 
-                <button onClick={()=>navigate('/user/my-profile')} className="flex w-full items-center gap-3 px-4 py-2 text-left text-[#dae2fd] transition hover:bg-[#1e40af]/10">
+                <button
+                  onClick={() => navigate("/user/my-profile")}
+                  className="flex w-full items-center gap-3 px-4 py-2 text-left text-[#dae2fd] transition hover:bg-[#1e40af]/10"
+                >
                   <span className="material-symbols-outlined text-[#b8c4ff]">person</span>
                   My Profile
                 </button>
 
-                <button onClick={()=>navigate('/user/edit-profile')} className="flex w-full items-center gap-3 px-4 py-2 text-left text-[#dae2fd] transition hover:bg-[#1e40af]/10">
+                <button
+                  onClick={() => navigate("/user/edit-profile")}
+                  className="flex w-full items-center gap-3 px-4 py-2 text-left text-[#dae2fd] transition hover:bg-[#1e40af]/10"
+                >
                   <span className="material-symbols-outlined text-[#b8c4ff]">edit</span>
                   Edit Profile
                 </button>
 
-                <button onClick={()=>navigate('/user/settings')} className="flex w-full items-center gap-3 px-4 py-2 text-left text-[#dae2fd] transition hover:bg-[#1e40af]/10">
+                <button
+                  onClick={() => navigate("/user/settings")}
+                  className="flex w-full items-center gap-3 px-4 py-2 text-left text-[#dae2fd] transition hover:bg-[#1e40af]/10"
+                >
                   <span className="material-symbols-outlined text-[#b8c4ff]">settings</span>
                   Settings
                 </button>
