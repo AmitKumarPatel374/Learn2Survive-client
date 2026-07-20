@@ -1,73 +1,90 @@
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
+import { toast } from "react-toastify"
+
 import QuizHero from "../../components/quiz/QuizHero"
 import QuizSearchFilter from "../../components/quiz/QuizSearchFilter"
 import FeaturedQuiz from "../../components/quiz/QuizFeatured"
 import QuizSummary from "../../components/quiz/QuizSummary"
 import QuizGrid from "../../components/quiz/QuizGrid"
 import ContinueLearning from "../../components/quiz/ContinueLearning"
-
+import apiInstance from "../../config/apiInstance"
 
 const QuizCenterPage = () => {
   const [search, setSearch] = useState("")
   const [selectedFilter, setSelectedFilter] = useState("all")
 
-  const quizzes = [
-    {
-      _id: "1",
-      title: "Flood Awareness Quiz",
-      thumbnail:
-        "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?w=1200",
-      difficulty: "Easy",
-      duration: 10,
-      totalQuestions: 15,
-      description:
-        "Learn how to stay safe before, during and after floods.",
-      completed: true,
-      score: 92,
-      category: "Natural",
-    },
-    {
-      _id: "2",
-      title: "Earthquake Safety Quiz",
-      thumbnail:
-        "https://images.unsplash.com/photo-1527489377706-5bf97e608852?w=1200",
-      difficulty: "Medium",
-      duration: 15,
-      totalQuestions: 20,
-      description:
-        "Test your earthquake preparedness and response knowledge.",
-      completed: false,
-      category: "Natural",
-    },
-    {
-      _id: "3",
-      title: "Chemical Spill Quiz",
-      thumbnail:
-        "https://images.unsplash.com/photo-1581093588401-12aa8652c7db?w=1200",
-      difficulty: "Hard",
-      duration: 20,
-      totalQuestions: 25,
-      description:
-        "Assess your understanding of hazardous chemical emergencies.",
-      completed: false,
-      category: "Man-Made",
-    },
-  ]
+  const [quizzes, setQuizzes] = useState([])
+  const [history, setHistory] = useState([])
 
-  const featuredQuiz = quizzes[0]
+  const [loading, setLoading] = useState(true)
 
-  const continueQuiz = {
-    title: "Earthquake Safety Quiz",
-    progress: 65,
-    description:
-      "Continue from where you left off and complete the remaining questions.",
-  }
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [quizRes, historyRes] = await Promise.all([
+          apiInstance.get("/quiz"),
+          apiInstance.get("/quiz/history"),
+        ])
+
+        const quizzesData = quizRes.data.data || []
+        const historyData = historyRes.data.data || []
+
+        setHistory(historyData)
+
+        const mergedQuizzes = quizzesData.map((quiz) => {
+          const attempt = historyData.find(
+            (item) =>
+              item.quizId?.toString() ===
+              quiz._id.toString()
+          )
+
+          return {
+            ...quiz,
+            completed: attempt?.status === "Completed",
+            inProgress: attempt?.status === "In Progress",
+            score: attempt?.percentage || 0,
+            attemptId: attempt?.attemptId,
+          }
+        })
+
+        setQuizzes(mergedQuizzes)
+      } catch (error) {
+        toast.error(
+          error.response?.data?.message ||
+            "Failed to fetch quizzes."
+        )
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [])
+
+  const featuredQuiz =
+    quizzes.length > 0 ? quizzes[0] : null
+
+  const continueQuiz =
+    history.find(
+      (quiz) => quiz.status === "In Progress"
+    ) || null
+
+  const completedCount = history.filter(
+    (quiz) => quiz.status === "Completed"
+  ).length
 
   const stats = {
     totalQuizzes: quizzes.length,
-    completed: quizzes.filter((q) => q.completed).length,
-    remaining: quizzes.filter((q) => !q.completed).length,
-    bestScore: "92%",
+    completed: completedCount,
+    remaining: quizzes.length - completedCount,
+    bestScore:
+      history.length > 0
+        ? `${Math.max(
+            ...history.map(
+              (quiz) => quiz.percentage || 0
+            )
+          )}%`
+        : "--",
   }
 
   const filteredQuizzes = useMemo(() => {
@@ -85,17 +102,30 @@ const QuizCenterPage = () => {
         case "notAttempted":
           return !quiz.completed
 
-        case "Natural":
-          return quiz.category === "Natural"
+        case "inProgress":
+          return quiz.inProgress
 
-        case "Man-Made":
-          return quiz.category === "Man-Made"
+        case "all":
+          return true
 
         default:
-          return true
+          return quiz.category === selectedFilter
       }
     })
   }, [quizzes, search, selectedFilter])
+
+  // Hide dashboard cards while searching/filtering
+  const isFiltering =
+    selectedFilter !== "all" ||
+    search.trim() !== ""
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#0b1326] text-xl text-white">
+        Loading quizzes...
+      </div>
+    )
+  }
 
   return (
     <main className="min-h-screen bg-[#0b1326] text-white">
@@ -106,21 +136,46 @@ const QuizCenterPage = () => {
         setSearch={setSearch}
         selectedFilter={selectedFilter}
         setSelectedFilter={setSelectedFilter}
+        quizzes={quizzes}
       />
 
-      <section className="px-6 py-8 lg:px-10">
-        <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-3">
-          <div className="lg:col-span-2">
-            <FeaturedQuiz quiz={featuredQuiz} />
-          </div>
+      {!isFiltering && (
+        <>
+          <section className="px-6 py-8 lg:px-10">
+            <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-3">
+              <div className="lg:col-span-2">
+                {featuredQuiz && (
+                  <FeaturedQuiz quiz={featuredQuiz} />
+                )}
+              </div>
 
-          <QuizSummary stats={stats} />
+              <QuizSummary stats={stats} />
+            </div>
+          </section>
+
+          {continueQuiz && (
+            <ContinueLearning
+              quiz={continueQuiz}
+            />
+          )}
+        </>
+      )}
+
+      <section className="px-6 pb-10 lg:px-10">
+        <div className="mx-auto max-w-7xl">
+          <h2 className="mb-6 text-3xl font-bold text-white">
+            {isFiltering
+              ? `${filteredQuizzes.length} ${
+                  filteredQuizzes.length === 1
+                    ? "Quiz"
+                    : "Quizzes"
+                } Found`
+              : "All Quizzes"}
+          </h2>
+
+          <QuizGrid quizzes={filteredQuizzes} />
         </div>
       </section>
-
-      <ContinueLearning quiz={continueQuiz} />
-
-      <QuizGrid quizzes={filteredQuizzes} />
     </main>
   )
 }

@@ -1,19 +1,42 @@
 import { Search } from "lucide-react"
-
-const filters = [
-  { label: "All", value: "all" },
-  { label: "Not Attempted", value: "notAttempted" },
-  { label: "Completed", value: "completed" },
-  { label: "Natural Disasters", value: "Natural" },
-  { label: "Man-Made Disasters", value: "Man-Made" },
-]
+import { useMemo } from "react"
 
 const QuizSearchFilter = ({
   search,
   setSearch,
   selectedFilter,
   setSelectedFilter,
+  quizzes = [],
 }) => {
+  const filters = useMemo(() => {
+    const categories = [
+      ...new Set(quizzes.map((quiz) => quiz.category)),
+    ]
+
+    return [
+      {
+        label: "All",
+        value: "all",
+      },
+      {
+        label: "Not Attempted",
+        value: "notAttempted",
+      },
+      {
+        label: "Completed",
+        value: "completed",
+      },
+      {
+        label: "In Progress",
+        value: "inProgress",
+      },
+      ...categories.map((category) => ({
+        label: category,
+        value: category,
+      })),
+    ]
+  }, [quizzes])
+
   return (
     <section className="px-6 py-8 lg:px-10">
       <div className="mx-auto max-w-7xl">
@@ -40,7 +63,9 @@ const QuizSearchFilter = ({
           {filters.map((filter) => (
             <button
               key={filter.value}
-              onClick={() => setSelectedFilter(filter.value)}
+              onClick={() =>
+                setSelectedFilter(filter.value)
+              }
               className={`rounded-full px-5 py-2 text-sm font-medium transition-all duration-300 ${
                 selectedFilter === filter.value
                   ? "bg-[#1e40af] text-white"

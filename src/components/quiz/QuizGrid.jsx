@@ -1,14 +1,10 @@
-import { useNavigate } from "react-router-dom"
-import QuizCard from "./QuizCard"
 import { BookOpen } from "lucide-react"
+import QuizCard from "./QuizCard"
 
 const QuizGrid = ({ quizzes = [] }) => {
-  const navigate = useNavigate();
   return (
     <section className="px-6 py-8 lg:px-10">
       <div className="mx-auto max-w-7xl">
-        {/* Header */}
-
         <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <h2 className="text-[32px] font-bold text-white">
             All Quizzes
@@ -18,8 +14,6 @@ const QuizGrid = ({ quizzes = [] }) => {
             {quizzes.length} Available Quizzes
           </span>
         </div>
-
-        {/* Empty State */}
 
         {quizzes.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-white/10 bg-[#171f33]/40 py-20 text-center">
@@ -33,7 +27,7 @@ const QuizGrid = ({ quizzes = [] }) => {
             </h3>
 
             <p className="mt-3 max-w-md text-[#8e909f]">
-              Try changing your search keyword or filter to find available quizzes.
+              Try changing your search keyword or filter.
             </p>
           </div>
         ) : (

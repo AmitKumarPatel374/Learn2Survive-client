@@ -49,7 +49,7 @@ const QuizSummary = ({ stats }) => {
         return (
           <div
             key={item.key}
-            className={`rounded-2xl border border-white/10 ${item.border} bg-[#171f33]/60 p-5 backdrop-blur-xl transition hover:-translate-y-1`}
+            className={`rounded-2xl border border-white/10 ${item.border} bg-[#171f33]/60 p-5 backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-white/20`}
           >
             <div
               className={`mb-4 flex h-12 w-12 items-center justify-center rounded-xl ${item.iconBg}`}
@@ -65,7 +65,7 @@ const QuizSummary = ({ stats }) => {
             </p>
 
             <h3 className="mt-2 text-3xl font-bold text-white">
-              {stats[item.key]}
+              {stats?.[item.key] ?? "--"}
             </h3>
           </div>
         )

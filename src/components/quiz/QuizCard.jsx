@@ -1,108 +1,167 @@
 import {
   Timer,
   ListChecks,
-  RotateCcw,
   Play,
-  CheckCircle2,
+  Globe2,
+  ShieldAlert,
+  ArrowRight,
 } from "lucide-react"
 import { useNavigate } from "react-router-dom"
+import apiInstance from "../../config/apiInstance"
+import { toast } from "react-toastify"
 
 const difficultyColors = {
-  Easy: "bg-blue-500/10 text-blue-300",
-  Medium: "bg-amber-500/10 text-amber-300",
-  Hard: "bg-red-500/10 text-red-300",
+  Easy: "bg-emerald-500/15 text-emerald-300 border border-emerald-500/20",
+  Medium: "bg-amber-500/15 text-amber-300 border border-amber-500/20",
+  Hard: "bg-red-500/15 text-red-300 border border-red-500/20",
+}
+
+const categoryGradient = {
+  Preparedness: "from-cyan-600 via-blue-700 to-indigo-900",
+  Response: "from-orange-500 via-red-600 to-red-900",
+  Recovery: "from-emerald-500 via-green-600 to-teal-900",
+  Mitigation: "from-violet-600 via-indigo-700 to-slate-900",
 }
 
 const QuizCard = ({ quiz }) => {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
+
+  const startQuiz = async () => {
+    try {
+      const response = await apiInstance.post(
+        `/student/quiz/${quiz._id}/start`
+      )
+
+      if (response.data.success) {
+        navigate(`/dashboard/quizzes/start/${response.data.attemptId}`)
+      }
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Unable to start quiz."
+      )
+    }
+  }
+
   return (
-    <div className="group overflow-hidden rounded-3xl border border-white/10 bg-[#171f33]/50 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-[#3755c3]/40">
-      {/* Thumbnail */}
+    <div className="group overflow-hidden rounded-3xl border border-white/10 bg-[#151d32] transition-all duration-300 hover:-translate-y-2 hover:border-blue-500/40 hover:shadow-[0_20px_50px_rgba(59,130,246,.18)]">
+      {/* Header */}
 
-      <div className="relative h-52 overflow-hidden">
-        <img
-          src={quiz.thumbnail}
-          alt={quiz.title}
-          className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
-        />
+      <div
+        className={`relative h-44 overflow-hidden bg-gradient-to-br ${
+          categoryGradient[quiz.category] || "from-blue-700 to-indigo-900"
+        }`}
+      >
+        {/* Decorative */}
 
-        {/* Status Badge */}
+        <div className="absolute -left-10 -top-10 h-36 w-36 rounded-full bg-white/10 blur-3xl"></div>
 
-        {quiz.completed ? (
-          <span className="absolute right-4 top-4 rounded-full bg-emerald-500 px-3 py-1 text-xs font-semibold text-white">
-            COMPLETED
-          </span>
-        ) : (
-          <span className="absolute right-4 top-4 rounded-full bg-amber-500 px-3 py-1 text-xs font-semibold text-black">
-            NEW
-          </span>
-        )}
+        <div className="absolute -bottom-10 -right-10 h-40 w-40 rounded-full bg-white/10 blur-3xl"></div>
 
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0b1326] via-transparent to-transparent" />
+        {/* Category */}
+
+        <div className="absolute left-5 top-5 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold text-white backdrop-blur">
+          {quiz.category}
+        </div>
+
+        {/* Icon */}
+
+        <div className="flex h-full items-center justify-center">
+          <div className="rounded-full bg-white/15 p-5 backdrop-blur">
+            <ShieldAlert
+              size={58}
+              className="text-white"
+            />
+          </div>
+        </div>
       </div>
 
       {/* Body */}
 
       <div className="space-y-5 p-6">
         <div>
-          <h3 className="text-2xl font-bold text-white transition group-hover:text-[#b8c4ff]">
+          <span
+            className={`rounded-full px-3 py-1 text-xs font-semibold ${
+              difficultyColors[quiz.difficulty]
+            }`}
+          >
+            {quiz.difficulty}
+          </span>
+
+          <h3 className="mt-4 text-2xl font-bold text-white transition group-hover:text-blue-300">
             {quiz.title}
           </h3>
 
-          <div className="mt-3 flex flex-wrap items-center gap-3 text-sm">
-            <span
-              className={`rounded-full px-3 py-1 font-medium ${
-                difficultyColors[quiz.difficulty]
-              }`}
-            >
-              {quiz.difficulty}
-            </span>
+          <p className="mt-3 line-clamp-3 text-sm leading-6 text-slate-400">
+            {quiz.description}
+          </p>
+        </div>
 
-            <div className="flex items-center gap-1 text-[#8e909f]">
-              <Timer size={15} />
+        {/* Stats */}
 
-              <span>{quiz.duration} Min</span>
+        <div className="grid grid-cols-2 gap-4 rounded-2xl bg-[#0f172a]/70 p-4">
+          <div className="flex items-center gap-3">
+            <div className="rounded-xl bg-blue-500/15 p-2">
+              <Timer
+                size={18}
+                className="text-blue-300"
+              />
             </div>
 
-            <div className="flex items-center gap-1 text-[#8e909f]">
-              <ListChecks size={15} />
+            <div>
+              <p className="text-xs text-slate-500">
+                Duration
+              </p>
 
-              <span>{quiz.totalQuestions} Q</span>
+              <p className="font-semibold text-white">
+                {quiz.duration} min
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div className="rounded-xl bg-yellow-500/15 p-2">
+              <ListChecks
+                size={18}
+                className="text-yellow-300"
+              />
+            </div>
+
+            <div>
+              <p className="text-xs text-slate-500">
+                Questions
+              </p>
+
+              <p className="font-semibold text-white">
+                {quiz.totalQuestions}
+              </p>
             </div>
           </div>
         </div>
 
-        {!quiz.completed ? (
-          <p className="line-clamp-2 text-sm leading-6 text-[#8e909f]">
-            {quiz.description}
-          </p>
-        ) : (
-          <div className="flex items-center justify-between rounded-xl bg-[#222a3d] px-4 py-3">
-            <span className="text-sm text-[#8e909f]">
-              Last Score
-            </span>
+        {/* Footer */}
 
-            <span className="font-semibold text-emerald-400">
-              {quiz.score}%
-            </span>
+        <div className="flex items-center justify-between border-t border-white/10 pt-5">
+          <div>
+            <p className="text-xs text-slate-500">
+              Created
+            </p>
+
+            <p className="text-sm text-slate-300">
+              {new Date(quiz.createdAt).toLocaleDateString()}
+            </p>
           </div>
-        )}
 
-        {/* Button */}
+          <button
+            onClick={startQuiz}
+            className="flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white transition hover:bg-blue-700"
+          >
+            <Play size={17} />
 
-        {quiz.completed ? (
-          <button onClick={()=>navigate('/dashboard/quizzes/start')} className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#3755c3]/40 py-3 font-semibold text-[#b8c4ff] transition hover:bg-[#1e40af] hover:text-white">
-            <RotateCcw size={18} />
+            Start
 
-            Retake Quiz
+            <ArrowRight size={17} />
           </button>
-        ) : (
-          <button onClick={()=>navigate('/dashboard/quizzes/start')} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#1e40af] py-3 font-semibold text-white transition hover:bg-[#3755c3]">
-            <Play size={18} />
-
-            Start Quiz
-          </button>
-        )}
+        </div>
       </div>
     </div>
   )
