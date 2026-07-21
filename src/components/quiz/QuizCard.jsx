@@ -2,13 +2,11 @@ import {
   Timer,
   ListChecks,
   Play,
-  Globe2,
   ShieldAlert,
   ArrowRight,
+  Trophy,
 } from "lucide-react"
 import { useNavigate } from "react-router-dom"
-import apiInstance from "../../config/apiInstance"
-import { toast } from "react-toastify"
 
 const difficultyColors = {
   Easy: "bg-emerald-500/15 text-emerald-300 border border-emerald-500/20",
@@ -23,23 +21,40 @@ const categoryGradient = {
   Mitigation: "from-violet-600 via-indigo-700 to-slate-900",
 }
 
+const statusConfig = {
+  new: {
+    text: "Not Started",
+    className:
+      "bg-slate-500/20 text-slate-300 border border-slate-500/20",
+  },
+  progress: {
+    text: "In Progress",
+    className:
+      "bg-amber-500/20 text-amber-300 border border-amber-500/20",
+  },
+  completed: {
+    text: "Completed",
+    className:
+      "bg-emerald-500/20 text-emerald-300 border border-emerald-500/20",
+  },
+}
+
 const QuizCard = ({ quiz }) => {
   const navigate = useNavigate()
 
-  const startQuiz = async () => {
-    try {
-      const response = await apiInstance.post(
-        `/student/quiz/${quiz._id}/start`
-      )
+  const status = quiz.completed
+    ? statusConfig.completed
+    : quiz.inProgress
+    ? statusConfig.progress
+    : statusConfig.new
 
-      if (response.data.success) {
-        navigate(`/dashboard/quizzes/start/${response.data.attemptId}`)
-      }
-    } catch (error) {
-      toast.error(
-        error.response?.data?.message || "Unable to start quiz."
-      )
+  const handleQuiz = () => {
+    if (quiz.inProgress) {
+      navigate(`/learning/quiz/${quiz.attemptId}`)
+      return
     }
+
+    navigate(`/dashboard/quiz/${quiz._id}`)
   }
 
   return (
@@ -48,19 +63,26 @@ const QuizCard = ({ quiz }) => {
 
       <div
         className={`relative h-44 overflow-hidden bg-gradient-to-br ${
-          categoryGradient[quiz.category] || "from-blue-700 to-indigo-900"
+          categoryGradient[quiz.category] ||
+          "from-blue-700 to-indigo-900"
         }`}
       >
-        {/* Decorative */}
+        <div className="absolute -left-10 -top-10 h-36 w-36 rounded-full bg-white/10 blur-3xl" />
 
-        <div className="absolute -left-10 -top-10 h-36 w-36 rounded-full bg-white/10 blur-3xl"></div>
-
-        <div className="absolute -bottom-10 -right-10 h-40 w-40 rounded-full bg-white/10 blur-3xl"></div>
+        <div className="absolute -bottom-10 -right-10 h-40 w-40 rounded-full bg-white/10 blur-3xl" />
 
         {/* Category */}
 
         <div className="absolute left-5 top-5 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold text-white backdrop-blur">
           {quiz.category}
+        </div>
+
+        {/* Status */}
+
+        <div
+          className={`absolute right-5 top-5 rounded-full px-3 py-1 text-xs font-semibold backdrop-blur ${status.className}`}
+        >
+          {status.text}
         </div>
 
         {/* Icon */}
@@ -138,6 +160,38 @@ const QuizCard = ({ quiz }) => {
           </div>
         </div>
 
+        {/* Previous Score */}
+
+        {quiz.completed && (
+          <div className="flex items-center justify-between rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-4">
+            <div className="flex items-center gap-3">
+              <div className="rounded-full bg-emerald-500/20 p-2">
+                <Trophy
+                  size={20}
+                  className="text-emerald-300"
+                />
+              </div>
+
+              <div>
+                <p className="text-xs uppercase tracking-wider text-emerald-300">
+                  Previous Score
+                </p>
+
+                <p className="font-semibold text-white">
+                  {quiz.score}/{quiz.totalQuestions}
+                </p>
+              </div>
+            </div>
+
+            <span className="rounded-full bg-emerald-500/20 px-3 py-1 text-sm font-semibold text-emerald-300">
+              {Math.round(
+                (quiz.score / quiz.totalQuestions) * 100
+              )}
+              %
+            </span>
+          </div>
+        )}
+
         {/* Footer */}
 
         <div className="flex items-center justify-between border-t border-white/10 pt-5">
@@ -147,17 +201,29 @@ const QuizCard = ({ quiz }) => {
             </p>
 
             <p className="text-sm text-slate-300">
-              {new Date(quiz.createdAt).toLocaleDateString()}
+              {new Date(
+                quiz.createdAt
+              ).toLocaleDateString()}
             </p>
           </div>
 
           <button
-            onClick={()=>navigate(`/dashboard/quiz/${quiz._id}`)}
-            className="flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white transition hover:bg-blue-700"
+            onClick={handleQuiz}
+            className={`flex items-center gap-2 rounded-xl px-5 py-3 font-semibold text-white transition ${
+              quiz.completed
+                ? "bg-emerald-600 hover:bg-emerald-700"
+                : quiz.inProgress
+                ? "bg-amber-600 hover:bg-amber-700"
+                : "bg-blue-600 hover:bg-blue-700"
+            }`}
           >
             <Play size={17} />
 
-            Start
+            {quiz.completed
+              ? "Retake"
+              : quiz.inProgress
+              ? "Continue"
+              : "Start"}
 
             <ArrowRight size={17} />
           </button>
