@@ -25,7 +25,7 @@ const FeaturedQuiz = ({ quiz }) => {
   const navigate = useNavigate()
 
   if (!quiz) return null
-
+ console.log(quiz)
   return (
     <section className="overflow-hidden rounded-3xl border border-[#3755c3]/20 bg-[#171f33]/60 backdrop-blur-xl">
       <div className="grid lg:grid-cols-2">
@@ -94,7 +94,7 @@ const FeaturedQuiz = ({ quiz }) => {
 
           <button
             onClick={() =>
-              navigate(`/dashboard/quizzes/${quiz._id}`)
+              navigate(`/dashboard/quiz/${quiz._id}`)
             }
             className="mt-10 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white transition hover:bg-blue-700"
           >

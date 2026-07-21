@@ -152,7 +152,7 @@ const QuizCard = ({ quiz }) => {
           </div>
 
           <button
-            onClick={startQuiz}
+            onClick={()=>navigate(`/dashboard/quiz/${quiz._id}`)}
             className="flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white transition hover:bg-blue-700"
           >
             <Play size={17} />
