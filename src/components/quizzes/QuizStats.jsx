@@ -1,10 +1,15 @@
 import { BarChart3 } from "lucide-react"
 
 const QuizStats = ({
-  totalQuestions,
-  attemptedQuestions,
-  remainingQuestions,
+  totalQuestions = 0,
+  attemptedQuestions = 0,
+  remainingQuestions = 0,
 }) => {
+  const completion =
+    totalQuestions > 0
+      ? Math.round((attemptedQuestions / totalQuestions) * 100)
+      : 0
+
   return (
     <div className="rounded-2xl border border-white/10 bg-[#171f33]/60 p-6 backdrop-blur-xl">
       {/* Header */}
@@ -25,10 +30,8 @@ const QuizStats = ({
       </div>
 
       {/* Stats */}
-
       <div className="space-y-2">
         {/* Total */}
-
         <div className="flex items-center justify-between">
           <span className="text-sm text-gray-400">
             Total Questions
@@ -40,7 +43,6 @@ const QuizStats = ({
         </div>
 
         {/* Attempted */}
-
         <div className="flex items-center justify-between">
           <span className="text-sm text-gray-400">
             Attempted
@@ -52,7 +54,6 @@ const QuizStats = ({
         </div>
 
         {/* Remaining */}
-
         <div className="flex items-center justify-between">
           <span className="text-sm text-gray-400">
             Remaining
@@ -64,26 +65,18 @@ const QuizStats = ({
         </div>
 
         {/* Progress */}
-
         <div className="pt-2">
           <div className="mb-2 flex items-center justify-between text-xs text-gray-400">
             <span>Completion</span>
 
-            <span>
-              {Math.round(
-                (attemptedQuestions / totalQuestions) * 100
-              )}
-              %
-            </span>
+            <span>{completion}%</span>
           </div>
 
           <div className="h-2 overflow-hidden rounded-full bg-[#2d3449]">
             <div
               className="h-full rounded-full bg-[#4edea3] transition-all duration-500"
               style={{
-                width: `${
-                  (attemptedQuestions / totalQuestions) * 100
-                }%`,
+                width: `${completion}%`,
               }}
             />
           </div>

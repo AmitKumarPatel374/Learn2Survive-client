@@ -1,7 +1,8 @@
-
 import { Lightbulb } from "lucide-react"
 
-const QuizTip = ({ tip }) => {
+const QuizTip = ({
+  tip = "Read every question carefully before selecting your answer. Eliminate incorrect options first if you're unsure.",
+}) => {
   return (
     <div className="rounded-2xl border border-white/10 bg-[#171f33]/60 p-6 backdrop-blur-xl">
       {/* Header */}

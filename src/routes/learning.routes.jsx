@@ -12,7 +12,7 @@ const LearningRoutes = () => {
         element={<QuizPage />}
       />
       <Route
-        path="quiz/result"
+        path="quiz/result/:attemptId"
         element={<QuizResultPage />}
       />
       <Route

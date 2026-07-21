@@ -5,19 +5,25 @@ const QuestionOption = ({
   index,
   selected,
   onClick,
+  disabled = false,
 }) => {
   return (
     <button
       type="button"
       onClick={onClick}
+      disabled={disabled}
+      aria-pressed={selected}
       className={`group flex w-full items-center rounded-2xl border p-4 text-left transition-all duration-200 ${
         selected
           ? "border-2 border-[#4edea3] bg-[#00a572]/10 shadow-[0_0_20px_rgba(78,222,163,0.15)]"
           : "border-[#444653] bg-[#131b2e]/40 hover:border-[#b8c4ff]/30 hover:bg-[#b8c4ff]/5"
+      } ${
+        disabled
+          ? "cursor-not-allowed opacity-70"
+          : ""
       }`}
     >
       {/* Radio Circle */}
-
       <div
         className={`mr-5 flex h-6 w-6 items-center justify-center rounded-full border-2 transition-all ${
           selected
@@ -36,8 +42,7 @@ const QuestionOption = ({
         )}
       </div>
 
-      {/* Option Label */}
-
+      {/* Option */}
       <div className="flex flex-1 items-center justify-between">
         <div>
           <p
