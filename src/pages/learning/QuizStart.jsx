@@ -1,8 +1,9 @@
-import { ArrowLeft, Droplets, HelpCircle, Timer, BarChart3 } from "lucide-react"
+import { ArrowLeft, Droplets, HelpCircle, Timer, BarChart3, Info } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { toast } from "react-toastify"
 import apiInstance from "../../config/apiInstance"
+import QuizInstructionsModal from "../../components/quizzes/QuizInstructionsModal"
 
 const QuizStart = () => {
   const navigate = useNavigate()
@@ -11,6 +12,7 @@ const QuizStart = () => {
   const [quiz, setQuiz] = useState(null)
   const [loading, setLoading] = useState(true)
   const [starting, setStarting] = useState(false)
+  const [showInstructions, setShowInstructions] = useState(false)
 
   useEffect(() => {
     fetchQuiz()
@@ -142,15 +144,32 @@ const QuizStart = () => {
           </div>
 
           {/* Start Button */}
-          <button
-            onClick={handleStartQuiz}
-            disabled={starting}
-            className="relative z-10 mt-8 rounded-full bg-[#b8c4ff] px-14 py-4 text-xl font-semibold text-[#002584] transition hover:scale-105 disabled:cursor-not-allowed disabled:opacity-70"
-          >
-            {starting ? "Starting..." : "Start Quiz"}
-          </button>
+          {/* Buttons */}
+          <div className="relative z-10 mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <button
+              onClick={() => setShowInstructions(true)}
+              className="flex items-center justify-center gap-2 rounded-full border border-[#b8c4ff]/30 bg-[#171f33]/60 px-8 py-4 text-lg font-semibold text-[#b8c4ff] transition-all duration-300 hover:border-[#b8c4ff]/60 hover:bg-[#1d2742]"
+            >
+              <Info size={20} />
+              View Instructions
+            </button>
+
+            <button
+              onClick={handleStartQuiz}
+              disabled={starting}
+              className="rounded-full bg-[#b8c4ff] px-14 py-4 text-xl font-semibold text-[#002584] transition hover:scale-105 disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              {starting ? "Starting..." : "Start Quiz"}
+            </button>
+          </div>
         </div>
       </div>
+      <QuizInstructionsModal
+        isOpen={showInstructions}
+        onClose={() => setShowInstructions(false)}
+        duration={quiz.duration}
+        totalQuestions={quiz.totalQuestions}
+      />
     </main>
   )
 }

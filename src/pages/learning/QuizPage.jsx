@@ -32,9 +32,7 @@ const QuizPage = () => {
 
   const fetchQuiz = async () => {
     try {
-      const response = await apiInstance.get(
-        `/quiz/attempt/${attemptId}`
-      )
+      const response = await apiInstance.get(`/quiz/attempt/${attemptId}`)
 
       const data = response.data.data
 
@@ -44,30 +42,33 @@ const QuizPage = () => {
       const answerMap = {}
 
       data.answers.forEach((answer) => {
-        answerMap[answer.questionId] =
-          answer.selectedAnswer
+        answerMap[answer.questionId] = answer.selectedAnswer
       })
 
       setSelectedAnswers(answerMap)
 
-      const durationInSeconds =
-        data.quiz.duration * 60
+      const durationInSeconds = data.quiz.duration * 60
 
       setTotalTime(durationInSeconds)
 
       // Backend should return remainingTime
-      setTimeLeft(
-        data.remainingTime ?? durationInSeconds
-      )
+      setTimeLeft(data.remainingTime ?? durationInSeconds)
     } catch (error) {
-      toast.error(
-        error.response?.data?.message ||
-          "Failed to load quiz."
-      )
+      toast.error(error.response?.data?.message || "Failed to load quiz.")
 
       navigate(-1)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const saveRemainingTime = async (remainingTime) => {
+    try {
+      await apiInstance.post(`/quiz/${attemptId}/timer`, {
+        remainingTime,
+      })
+    } catch (error) {
+      console.log("Failed to save timer")
     }
   }
 
@@ -90,6 +91,30 @@ const QuizPage = () => {
     return () => clearInterval(timer)
   }, [loading, submitting])
 
+  useEffect(() => {
+    if (loading || submitting) return
+
+    const interval = setInterval(() => {
+      saveRemainingTime(timeLeft)
+    }, 30000)
+
+    return () => clearInterval(interval)
+  }, [timeLeft, loading, submitting])
+
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      saveRemainingTime(timeLeft)
+    }
+
+    window.addEventListener("beforeunload", handleBeforeUnload)
+
+    return () => {
+      handleBeforeUnload()
+
+      window.removeEventListener("beforeunload", handleBeforeUnload)
+    }
+  }, [timeLeft])
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#0b1326] text-white">
@@ -109,13 +134,10 @@ const QuizPage = () => {
   const current = questions[currentQuestion]
 
   // Save Answer
-  const handleSelectOption = async (
-    optionIndex
-  ) => {
+  const handleSelectOption = async (optionIndex) => {
     if (savingAnswer) return
 
-    const previousAnswer =
-      selectedAnswers[current._id]
+    const previousAnswer = selectedAnswers[current._id]
 
     setSavingAnswer(true)
 
@@ -126,13 +148,10 @@ const QuizPage = () => {
     }))
 
     try {
-      await apiInstance.post(
-        `/quiz/attempt/${attemptId}/save-answer`,
-        {
-          questionId: current._id,
-          selectedAnswer: optionIndex,
-        }
-      )
+      await apiInstance.post(`/quiz/attempt/${attemptId}/save-answer`, {
+        questionId: current._id,
+        selectedAnswer: optionIndex,
+      })
     } catch (error) {
       // Rollback if API fails
       setSelectedAnswers((prev) => {
@@ -141,17 +160,13 @@ const QuizPage = () => {
         if (previousAnswer === undefined) {
           delete updated[current._id]
         } else {
-          updated[current._id] =
-            previousAnswer
+          updated[current._id] = previousAnswer
         }
 
         return updated
       })
 
-      toast.error(
-        error.response?.data?.message ||
-          "Failed to save answer."
-      )
+      toast.error(error.response?.data?.message || "Failed to save answer.")
     } finally {
       setSavingAnswer(false)
     }
@@ -164,10 +179,7 @@ const QuizPage = () => {
   }
 
   const handleNext = () => {
-    if (
-      currentQuestion ===
-      questions.length - 1
-    ) {
+    if (currentQuestion === questions.length - 1) {
       handleSubmitQuiz()
       return
     }
@@ -182,46 +194,33 @@ const QuizPage = () => {
     try {
       setSubmitting(true)
 
-      await apiInstance.post(
-        `/quiz/attempt/${attemptId}/submit`
-      )
+      // Save final timer
+      await saveRemainingTime(0)
 
-      navigate(
-        `/learning/quiz/result/${attemptId}`
-      )
+      // Submit quiz
+      await apiInstance.post(`/quiz/attempt/${attemptId}/submit`)
+
+      navigate(`/learning/quiz/result/${attemptId}`)
     } catch (error) {
-      toast.error(
-        error.response?.data?.message ||
-          "Failed to submit quiz."
-      )
+      toast.error(error.response?.data?.message || "Failed to submit quiz.")
     } finally {
       setSubmitting(false)
     }
   }
 
-  const progress =
-    ((currentQuestion + 1) /
-      questions.length) *
-    100
+  const progress = ((currentQuestion + 1) / questions.length) * 100
 
-  const attemptedQuestions =
-    Object.keys(selectedAnswers).length
+  const attemptedQuestions = Object.keys(selectedAnswers).length
 
-  const remainingQuestions =
-    questions.length -
-    attemptedQuestions
+  const remainingQuestions = questions.length - attemptedQuestions
 
   return (
     <main className="min-h-screen bg-[#0b1326] text-white">
       <QuizHeader
         title={quiz.title}
         category={quiz.category}
-        currentQuestion={
-          currentQuestion + 1
-        }
-        totalQuestions={
-          questions.length
-        }
+        currentQuestion={currentQuestion + 1}
+        totalQuestions={questions.length}
         progress={progress}
       />
 
@@ -229,28 +228,16 @@ const QuizPage = () => {
         <div className="flex-1">
           <QuestionCard
             question={current}
-            questionNumber={
-              currentQuestion + 1
-            }
-            selectedAnswer={
-              selectedAnswers[current._id]
-            }
-            onSelectOption={
-              handleSelectOption
-            }
+            questionNumber={currentQuestion + 1}
+            selectedAnswer={selectedAnswers[current._id]}
+            onSelectOption={handleSelectOption}
             disabled={savingAnswer}
           />
 
           <QuestionNavigation
-            currentQuestion={
-              currentQuestion + 1
-            }
-            totalQuestions={
-              questions.length
-            }
-            selectedAnswer={
-              selectedAnswers[current._id]
-            }
+            currentQuestion={currentQuestion + 1}
+            totalQuestions={questions.length}
+            selectedAnswer={selectedAnswers[current._id]}
             onPrevious={handlePrevious}
             onNext={handleNext}
             loading={submitting}
@@ -258,15 +245,9 @@ const QuizPage = () => {
         </div>
 
         <QuizSidebar
-          totalQuestions={
-            questions.length
-          }
-          attemptedQuestions={
-            attemptedQuestions
-          }
-          remainingQuestions={
-            remainingQuestions
-          }
+          totalQuestions={questions.length}
+          attemptedQuestions={attemptedQuestions}
+          remainingQuestions={remainingQuestions}
           tip={current?.tip}
           timeLeft={timeLeft}
           totalTime={totalTime}
