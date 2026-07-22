@@ -1,16 +1,21 @@
 import { Clock3 } from "lucide-react"
 
-const QuizTimer = ({ timeLeft }) => {
+const QuizTimer = ({
+  timeLeft = 0,
+  totalTime = 600,
+}) => {
   const minutes = Math.floor(timeLeft / 60)
   const seconds = timeLeft % 60
 
-  const formattedTime = `${String(minutes).padStart(2, "0")}:${String(
-    seconds
-  ).padStart(2, "0")}`
+  const formattedTime = `${String(minutes).padStart(
+    2,
+    "0"
+  )}:${String(seconds).padStart(2, "0")}`
 
-  const totalTime = 10 * 60
-
-  const percentage = (timeLeft / totalTime) * 100
+  const percentage =
+    totalTime > 0
+      ? (timeLeft / totalTime) * 100
+      : 0
 
   let textColor = "text-[#4edea3]"
   let progressColor = "bg-[#4edea3]"
@@ -31,7 +36,6 @@ const QuizTimer = ({ timeLeft }) => {
   return (
     <div className="rounded-2xl border border-white/10 bg-[#171f33]/60 p-6 backdrop-blur-xl">
       {/* Header */}
-
       <div className="mb-3 flex items-center gap-3">
         <div
           className={`flex h-10 w-10 items-center justify-center rounded-xl ${bgColor}`}
@@ -55,7 +59,6 @@ const QuizTimer = ({ timeLeft }) => {
       </div>
 
       {/* Timer */}
-
       <div
         className={`text-center text-4xl font-bold tracking-widest ${textColor} ${
           timeLeft <= 30 ? "animate-pulse" : ""
@@ -65,7 +68,6 @@ const QuizTimer = ({ timeLeft }) => {
       </div>
 
       {/* Progress */}
-
       <div className="mt-3">
         <div className="mb-2 flex justify-between text-xs text-gray-400">
           <span>Remaining</span>
@@ -84,7 +86,6 @@ const QuizTimer = ({ timeLeft }) => {
       </div>
 
       {/* Warning */}
-
       {timeLeft <= 60 && (
         <div className="mt-5 rounded-xl border border-red-500/20 bg-red-500/10 p-3 text-center text-sm font-medium text-red-400">
           ⚠ Less than 1 minute remaining!

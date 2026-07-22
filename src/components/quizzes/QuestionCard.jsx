@@ -5,9 +5,12 @@ const QuestionCard = ({
   questionNumber,
   selectedAnswer,
   onSelectOption,
+  disabled = false,
 }) => {
+  if (!question) return null
+
   return (
-    <div className="glass-card w-full rounded-[32px] border border-white/10 bg-[#171f33]/60  shadow-2xl backdrop-blur-xl lg:p-8">
+    <div className="glass-card w-full rounded-[32px] border border-white/10 bg-[#171f33]/60 shadow-2xl backdrop-blur-xl lg:p-8">
       {/* Question Number */}
       <div className="mb-4">
         <span className="rounded-full border border-[#b8c4ff]/20 bg-[#1e40af]/20 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-[#b8c4ff]">
@@ -20,15 +23,15 @@ const QuestionCard = ({
       </div>
 
       {/* Options */}
-
       <div className="space-y-4">
-        {question.options.map((option, index) => (
+        {question.options?.map((option, index) => (
           <QuestionOption
-            key={index}
+            key={`${question._id}-${index}`}
             option={option}
             index={index}
             selected={selectedAnswer === index}
             onClick={() => onSelectOption(index)}
+            disabled={disabled}
           />
         ))}
       </div>

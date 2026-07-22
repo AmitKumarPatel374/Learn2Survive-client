@@ -2,21 +2,32 @@ import { ArrowLeft } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 
 const QuizHeader = ({
-  title,
-  category,
-  currentQuestion,
-  totalQuestions,
-  progress,
+  title = "Quiz",
+  category = "General",
+  currentQuestion = 1,
+  totalQuestions = 0,
+  progress = 0,
 }) => {
   const navigate = useNavigate()
+
+  const handleBack = () => {
+    const confirmLeave = window.confirm(
+      "Are you sure you want to leave the quiz?\n\nYour progress has been saved, and you can resume it later."
+    )
+
+    if (confirmLeave) {
+      navigate(-1)
+    }
+  }
 
   return (
     <header className="sticky top-0 z-50 flex h-20 items-center justify-between border-b border-white/10 bg-[#0b1326]/80 px-6 backdrop-blur-xl">
       {/* Left */}
       <div className="flex items-center gap-4">
         <button
-          onClick={() => navigate(-1)}
+          onClick={handleBack}
           className="flex h-10 w-10 items-center justify-center rounded-full transition hover:bg-[#171f33]"
+          aria-label="Go Back"
         >
           <ArrowLeft className="h-5 w-5 text-[#b8c4ff]" />
         </button>
