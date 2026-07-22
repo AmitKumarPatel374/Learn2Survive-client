@@ -5,21 +5,80 @@ import {
   Timer,
   BarChart3,
 } from "lucide-react"
-import { useNavigate } from "react-router-dom"
+import { useEffect, useState } from "react"
+import { useNavigate, useParams } from "react-router-dom"
+import { toast } from "react-toastify"
+import apiInstance from "../../config/apiInstance"
 
 const QuizStart = () => {
   const navigate = useNavigate()
+  const { quizId } = useParams()
 
-  // Temporary data (replace with API later)
-  const quiz = {
-    title: "Flood Awareness Quiz",
-    description:
-      "Test your critical response knowledge during flood emergencies. Accurate decisions save lives.",
-    totalQuestions: 10,
-    duration: 10,
-    difficulty: "Medium",
+  const [quiz, setQuiz] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [starting, setStarting] = useState(false)
+
+  useEffect(() => {
+    fetchQuiz()
+  }, [])
+
+  const fetchQuiz = async () => {
+    try {
+      console.log(quizId);
+      
+      const response = await apiInstance.get(`/quiz/${quizId}`)
+
+      if (response.data.success) {
+        setQuiz(response.data.data)
+      }
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message ||
+          "Failed to fetch quiz."
+      )
+    } finally {
+      setLoading(false)
+    }
   }
 
+  const handleStartQuiz = async () => {
+    try {
+      setStarting(true)
+
+      const response = await apiInstance.post(
+        `/quiz/${quizId}/start`
+      )
+
+      if (response.data.success) {
+        navigate(
+          `/learning/quiz/${response.data.attemptId}`
+        )
+      }
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message ||
+          "Failed to start quiz."
+      )
+    } finally {
+      setStarting(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#0b1326] text-xl text-white">
+        Loading Quiz...
+      </div>
+    )
+  }
+
+  if (!quiz) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#0b1326] text-xl text-white">
+        Quiz not found.
+      </div>
+    )
+  }
 
   return (
     <main className="min-h-screen bg-[#0b1326] p-6 text-white lg:px-10">
@@ -32,7 +91,9 @@ const QuizStart = () => {
             className="flex items-center gap-2 text-[#8e909f] transition hover:text-white"
           >
             <ArrowLeft size={22} />
-            <span className="text-lg">Back to Training</span>
+            <span className="text-lg">
+              Back to Training
+            </span>
           </button>
 
           <div className="text-right">
@@ -41,7 +102,7 @@ const QuizStart = () => {
             </p>
 
             <p className="text-sm text-[#8e909f]">
-              Question 0 of {quiz.totalQuestions}
+              {quiz.totalQuestions} Questions
             </p>
           </div>
         </div>
@@ -50,6 +111,7 @@ const QuizStart = () => {
 
         <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#171f33]/60 p-8 text-center backdrop-blur-xl lg:px-14">
           <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-[#3755c3]/10 blur-3xl" />
+
           <div className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-[#4edea3]/10 blur-3xl" />
 
           {/* Icon */}
@@ -108,13 +170,24 @@ const QuizStart = () => {
             </div>
           </div>
 
+          {/* Category */}
+
+          <div className="mt-6">
+            <span className="rounded-full bg-blue-600/20 px-4 py-2 text-sm font-medium text-blue-300">
+              {quiz.category}
+            </span>
+          </div>
+
           {/* Button */}
 
           <button
-            onClick={()=>navigate('/learning/quiz')}
-            className="relative z-10 mt-8 rounded-full bg-[#b8c4ff] px-14 py-4 text-xl font-semibold text-[#002584] transition hover:scale-105"
+            onClick={navigate(`/learning/quiz/${response.data.attemptId}`)}
+            disabled={starting}
+            className="relative z-10 mt-8 rounded-full bg-[#b8c4ff] px-14 py-4 text-xl font-semibold text-[#002584] transition hover:scale-105 disabled:cursor-not-allowed disabled:opacity-70"
           >
-            Start Quiz
+            {starting
+              ? "Starting..."
+              : "Start Quiz"}
           </button>
         </div>
       </div>

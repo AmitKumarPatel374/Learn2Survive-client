@@ -15,7 +15,7 @@ const DashboardRoutes = () => {
       <Route path="learning-center" element={<LearningCenterPage />} />
       <Route path="disaster/:slug" element={<DisasterDetailsPage />} />
       <Route path="quizzes" element={<QuizCenterPage />} />
-      <Route path="quizzes/start" element={<QuizStart />} />
+      <Route path="quiz/:quizId" element={<QuizStart />} />
 
       <Route path="*" element={<PageNotFound />} />
     </Routes>
