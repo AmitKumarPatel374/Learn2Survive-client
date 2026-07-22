@@ -10,6 +10,7 @@ const QuizResultPage = () => {
 
   const [loading, setLoading] = useState(true)
   const [result, setResult] = useState(null)
+  const [showAnswers, setShowAnswers] = useState(false)
 
   useEffect(() => {
     fetchResult()
@@ -220,139 +221,154 @@ const QuizResultPage = () => {
 
         <section className="mt-8 rounded-3xl border border-white/10 bg-[#171f33]/60 p-8 backdrop-blur-xl">
           <div className="mb-8 flex items-center justify-between">
-            <h2 className="text-3xl font-bold">Question Summary</h2>
+            <div>
+              <h2 className="text-3xl font-bold">Question Summary</h2>
 
-            <span className="rounded-full bg-indigo-500/20 px-4 py-2 text-sm font-semibold text-indigo-300">
-              {correctAnswers}/{questions.length} Correct
-            </span>
+              <span className="mt-2 inline-block rounded-full bg-indigo-500/20 px-4 py-2 text-sm font-semibold text-indigo-300">
+                {correctAnswers}/{questions.length} Correct
+              </span>
+            </div>
+
+            <button
+              onClick={() => setShowAnswers(!showAnswers)}
+              className="rounded-xl bg-indigo-600 px-5 py-3 font-semibold text-white transition hover:bg-indigo-700"
+            >
+              {showAnswers ? "Hide Answers" : "See Answers"}
+            </button>
           </div>
 
-          <div className="space-y-5">
-            {questions.map((question, index) => (
-              <div
-                key={question.questionId}
-                className={`rounded-2xl border p-6 transition ${
-                  question.isCorrect
-                    ? "border-green-500/20 bg-green-500/5"
-                    : "border-red-500/20 bg-red-500/5"
-                }`}
-              >
-                <div className="flex items-start justify-between gap-5">
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-white">
-                      Q{index + 1}. {question.question}
-                    </h3>
+          <div
+            className={`overflow-hidden transition-all duration-500 ${
+              showAnswers ? "max-h-[10000px] opacity-100" : "max-h-0 opacity-0"
+            }`}
+          >
+            <div className="space-y-5">
+              {questions.map((question, index) => (
+                <div
+                  key={question.questionId}
+                  className={`rounded-2xl border p-6 transition ${
+                    question.isCorrect
+                      ? "border-green-500/20 bg-green-500/5"
+                      : "border-red-500/20 bg-red-500/5"
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-5">
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-white">
+                        Q{index + 1}. {question.question}
+                      </h3>
 
-                    {/* Your Answer */}
+                      {/* Your Answer */}
 
-                    <div className="mt-5">
-                      <p className="mb-1 text-sm text-gray-400">Your Answer</p>
+                      <div className="mt-5">
+                        <p className="mb-1 text-sm text-gray-400">Your Answer</p>
 
-                      <p
-                        className={`font-medium ${
-                          question.isCorrect ? "text-green-400" : "text-red-400"
-                        }`}
-                      >
-                        {question.selectedAnswer !== null
-                          ? question.options[question.selectedAnswer]
-                          : "Not Attempted"}
-                      </p>
-                    </div>
-
-                    {/* Correct Answer */}
-
-                    {!question.isCorrect && (
-                      <div className="mt-4">
-                        <p className="mb-1 text-sm text-gray-400">Correct Answer</p>
-
-                        <p className="font-medium text-green-400">
-                          {question.options[question.correctAnswer]}
+                        <p
+                          className={`font-medium ${
+                            question.isCorrect ? "text-green-400" : "text-red-400"
+                          }`}
+                        >
+                          {question.selectedAnswer !== null
+                            ? question.options[question.selectedAnswer]
+                            : "Not Attempted"}
                         </p>
                       </div>
-                    )}
 
-                    {/* All Options */}
+                      {/* Correct Answer */}
 
-                    <div className="mt-6 space-y-3">
-                      {question.options.map((option, optionIndex) => {
-                        const isCorrectOption = optionIndex === question.correctAnswer
+                      {!question.isCorrect && (
+                        <div className="mt-4">
+                          <p className="mb-1 text-sm text-gray-400">Correct Answer</p>
 
-                        const isSelected = optionIndex === question.selectedAnswer
+                          <p className="font-medium text-green-400">
+                            {question.options[question.correctAnswer]}
+                          </p>
+                        </div>
+                      )}
 
-                        let classes = "border-white/10 bg-white/5"
+                      {/* All Options */}
 
-                        if (isCorrectOption) {
-                          classes = "border-green-500/30 bg-green-500/10"
-                        } else if (isSelected && !question.isCorrect) {
-                          classes = "border-red-500/30 bg-red-500/10"
-                        }
+                      <div className="mt-6 space-y-3">
+                        {question.options.map((option, optionIndex) => {
+                          const isCorrectOption = optionIndex === question.correctAnswer
 
-                        return (
-                          <div
-                            key={optionIndex}
-                            className={`flex items-center justify-between rounded-xl border p-3 ${classes}`}
-                          >
-                            <span>
-                              {String.fromCharCode(65 + optionIndex)}. {option}
-                            </span>
+                          const isSelected = optionIndex === question.selectedAnswer
 
-                            {isCorrectOption ? (
-                              <CheckCircle2
-                                className="text-green-400"
-                                size={20}
-                              />
-                            ) : isSelected ? (
-                              <XCircle
-                                className="text-red-400"
-                                size={20}
-                              />
-                            ) : null}
-                          </div>
-                        )
-                      })}
+                          let classes = "border-white/10 bg-white/5"
+
+                          if (isCorrectOption) {
+                            classes = "border-green-500/30 bg-green-500/10"
+                          } else if (isSelected && !question.isCorrect) {
+                            classes = "border-red-500/30 bg-red-500/10"
+                          }
+
+                          return (
+                            <div
+                              key={optionIndex}
+                              className={`flex items-center justify-between rounded-xl border p-3 ${classes}`}
+                            >
+                              <span>
+                                {String.fromCharCode(65 + optionIndex)}. {option}
+                              </span>
+
+                              {isCorrectOption ? (
+                                <CheckCircle2
+                                  className="text-green-400"
+                                  size={20}
+                                />
+                              ) : isSelected ? (
+                                <XCircle
+                                  className="text-red-400"
+                                  size={20}
+                                />
+                              ) : null}
+                            </div>
+                          )
+                        })}
+                      </div>
+
+                      {/* Explanation */}
+
+                      {question.explanation && (
+                        <div className="mt-6 rounded-xl bg-white/5 p-4">
+                          <h4 className="mb-2 font-semibold text-[#b8c4ff]">Explanation</h4>
+
+                          <p className="text-sm leading-7 text-gray-300">{question.explanation}</p>
+                        </div>
+                      )}
                     </div>
 
-                    {/* Explanation */}
-
-                    {question.explanation && (
-                      <div className="mt-6 rounded-xl bg-white/5 p-4">
-                        <h4 className="mb-2 font-semibold text-[#b8c4ff]">Explanation</h4>
-
-                        <p className="text-sm leading-7 text-gray-300">{question.explanation}</p>
-                      </div>
-                    )}
-                  </div>
-
-                  <div>
-                    {question.isCorrect ? (
-                      <CheckCircle2
-                        size={34}
-                        className="text-green-400"
-                      />
-                    ) : (
-                      <XCircle
-                        size={34}
-                        className="text-red-400"
-                      />
-                    )}
+                    <div>
+                      {question.isCorrect ? (
+                        <CheckCircle2
+                          size={34}
+                          className="text-green-400"
+                        />
+                      ) : (
+                        <XCircle
+                          size={34}
+                          className="text-red-400"
+                        />
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </section>
         {/* Action Buttons */}
 
         <section className="mt-8 flex flex-col gap-4 sm:flex-row">
           <button
-            onClick={() => navigate(`/learning/quiz/start/${quiz._id}`)}
+            onClick={() => navigate(`/dashboard/quiz/${quiz._id}`)}
             className="flex-1 rounded-2xl bg-indigo-600 px-6 py-4 text-lg font-semibold transition hover:bg-indigo-700"
           >
             Retake Quiz
           </button>
 
           <button
-            onClick={() => navigate("/learning/quizzes")}
+            onClick={() => navigate("/dashboard/quizzes")}
             className="flex-1 rounded-2xl border border-green-500/20 bg-green-500/10 px-6 py-4 text-lg font-semibold text-green-300 transition hover:bg-green-500/20"
           >
             Back to Quiz Center

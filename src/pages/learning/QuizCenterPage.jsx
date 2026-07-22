@@ -163,16 +163,6 @@ const QuizCenterPage = () => {
 
       <section className="px-6 pb-10 lg:px-10">
         <div className="mx-auto max-w-7xl">
-          <h2 className="mb-6 text-3xl font-bold text-white">
-            {isFiltering
-              ? `${filteredQuizzes.length} ${
-                  filteredQuizzes.length === 1
-                    ? "Quiz"
-                    : "Quizzes"
-                } Found`
-              : "All Quizzes"}
-          </h2>
-
           <QuizGrid quizzes={filteredQuizzes} />
         </div>
       </section>
