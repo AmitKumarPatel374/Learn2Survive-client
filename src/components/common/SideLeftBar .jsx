@@ -43,17 +43,10 @@ const SideLeftBar = () => {
       icon: Bot,
       path: "/dashboard/simulations",
     },
-
-    // Account Section
-    {
-      title: "Profile",
-      icon: User,
-      path: "/dashboard/profile",
-    },
     {
       title: "Emergency Contacts",
       icon: Phone,
-      path: "/dashboard/emergency-contacts",
+      path: "/dashboard/emergency-contact",
     },
   ]
 
