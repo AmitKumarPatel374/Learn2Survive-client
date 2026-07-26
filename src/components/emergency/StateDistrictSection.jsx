@@ -1,109 +1,46 @@
-import { useEffect, useState } from "react"
-import {
-  MapPin,
-  Phone,
-  Globe,
-  Mail,
-  Loader2,
-} from "lucide-react"
+import { MapPin, Phone, Globe, Mail, Loader2 } from "lucide-react"
 
-import apiInstance from "../../config/apiInstance"
+const StateDistrictSection = ({
+  states = [],
+  districts = [],
+  stateContacts = [],
+  districtContacts = [],
+  selectedState,
+  selectedDistrict,
+  setSelectedState,
+  setSelectedDistrict,
+  loading,
+  search = "",
+  selectedCategory = "",
+}) => {
+  const contacts =
+    selectedDistrict && districtContacts.length > 0 ? districtContacts : stateContacts
 
-const StateDistrictSection = () => {
-  const [states, setStates] = useState([])
-  const [districts, setDistricts] = useState([])
+  const filteredContacts = contacts.filter((contact) => {
+    const matchesSearch =
+      !search ||
+      contact.office?.toLowerCase().includes(search.toLowerCase()) ||
+      contact.category?.toLowerCase().includes(search.toLowerCase()) ||
+      contact.phone?.includes(search)
 
-  const [selectedState, setSelectedState] = useState("")
-  const [selectedDistrict, setSelectedDistrict] = useState("")
+    const matchesCategory = !selectedCategory || contact.category === selectedCategory
 
-  const [contacts, setContacts] = useState([])
-
-  const [loading, setLoading] = useState(false)
-
-  useEffect(() => {
-    fetchStates()
-  }, [])
-
-  const fetchStates = async () => {
-    try {
-      const { data } = await apiInstance.get("/emergency/states")
-      setStates(data.data)
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  const handleStateChange = async (stateCode) => {
-    setSelectedState(stateCode)
-    setSelectedDistrict("")
-    setDistricts([])
-    setContacts([])
-
-    if (!stateCode) return
-
-    setLoading(true)
-
-    try {
-      const districtRes = await apiInstance.get(
-        `/emergency/districts/${stateCode}`
-      )
-
-      setDistricts(districtRes.data.data)
-
-      const stateContacts = await apiInstance.get(
-        `/emergency/state/${stateCode}`
-      )
-
-      setContacts(stateContacts.data.data)
-    } catch (error) {
-      console.log(error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleDistrictChange = async (district) => {
-    setSelectedDistrict(district)
-
-    if (!district) {
-      handleStateChange(selectedState)
-      return
-    }
-
-    setLoading(true)
-
-    try {
-      const { data } = await apiInstance.get(
-        `/emergency/district/${selectedState}/${district}`
-      )
-
-      setContacts(data.data)
-    } catch (error) {
-      console.log(error)
-    } finally {
-      setLoading(false)
-    }
-  }
+    return matchesSearch && matchesCategory
+  })
 
   return (
     <section className="mx-auto mt-16 max-w-7xl px-6">
-
       <div className="mb-8 flex items-center gap-3">
         <MapPin className="text-cyan-400" />
-        <h2 className="text-3xl font-bold">
-          State & District Contacts
-        </h2>
+        <h2 className="text-3xl font-bold">State & District Contacts</h2>
       </div>
 
       {/* Filters */}
 
       <div className="grid gap-4 md:grid-cols-2">
-
         <select
           value={selectedState}
-          onChange={(e) =>
-            handleStateChange(e.target.value)
-          }
+          onChange={(e) => setSelectedState(e.target.value)}
           className="rounded-xl border border-white/10 bg-white/5 px-4 py-3"
         >
           <option value="">Select State</option>
@@ -120,9 +57,7 @@ const StateDistrictSection = () => {
 
         <select
           value={selectedDistrict}
-          onChange={(e) =>
-            handleDistrictChange(e.target.value)
-          }
+          onChange={(e) => setSelectedDistrict(e.target.value)}
           disabled={!selectedState}
           className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 disabled:opacity-50"
         >
@@ -137,7 +72,6 @@ const StateDistrictSection = () => {
             </option>
           ))}
         </select>
-
       </div>
 
       {/* Loading */}
@@ -150,29 +84,19 @@ const StateDistrictSection = () => {
 
       {/* Contacts */}
 
-      {!loading && contacts.length > 0 && (
-
+      {!loading && filteredContacts.length > 0 && (
         <div className="mt-8 space-y-3">
-
-          {contacts.map((contact) => (
-
+          {filteredContacts.map((contact) => (
             <div
               key={contact._id}
               className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-4"
             >
-
               <div>
+                <h3 className="font-semibold">{contact.office}</h3>
 
-                <h3 className="font-semibold">
-                  {contact.office}
-                </h3>
-
-                <p className="mt-1 text-sm text-slate-400">
-                  {contact.category}
-                </p>
+                <p className="mt-1 text-sm text-slate-400">{contact.category}</p>
 
                 <div className="mt-2 flex flex-wrap gap-4 text-sm">
-
                   <span className="flex items-center gap-1">
                     <Phone size={14} />
                     {contact.phone}
@@ -196,36 +120,25 @@ const StateDistrictSection = () => {
                       Website
                     </a>
                   )}
-
                 </div>
-
               </div>
 
               <button
-                onClick={() =>
-                  window.open(`tel:${contact.phone}`)
-                }
+                onClick={() => window.open(`tel:${contact.phone}`)}
                 className="rounded-lg bg-cyan-600 px-5 py-2 font-medium hover:bg-cyan-700"
               >
                 Call
               </button>
-
             </div>
-
           ))}
-
         </div>
-
       )}
 
-      {!loading &&
-        selectedState &&
-        contacts.length === 0 && (
-          <div className="mt-10 rounded-xl border border-dashed border-white/20 py-10 text-center text-slate-400">
-            No contacts found.
-          </div>
-        )}
-
+      {!loading && selectedState && filteredContacts.length === 0 && (
+        <div className="mt-10 rounded-xl border border-dashed border-white/20 py-10 text-center text-slate-400">
+          No contacts found.
+        </div>
+      )}
     </section>
   )
 }
