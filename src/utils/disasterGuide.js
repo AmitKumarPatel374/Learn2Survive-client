@@ -43,3 +43,17 @@ const disasterGuideMap = {
     "coldwave",
   ],
 }
+
+export const getSafetyGuideSlug = (event) => {
+  if (!event) return null
+
+  const normalizedEvent = event.trim().toLowerCase()
+
+  for (const [slug, events] of Object.entries(disasterGuideMap)) {
+    if (events.includes(normalizedEvent)) {
+      return slug
+    }
+  }
+
+  return null
+}
