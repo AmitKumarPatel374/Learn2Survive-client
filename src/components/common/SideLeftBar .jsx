@@ -134,7 +134,7 @@ const SideLeftBar = () => {
           </div>
         </div>
 
-        <button className="mt-4 w-full rounded-xl bg-[#1e40af] py-2 text-sm font-medium text-white transition hover:bg-[#2856db]">
+        <button onClick={() => navigate('/dashboard/assistant/chat')} className="mt-4 w-full rounded-xl bg-[#1e40af] py-2 text-sm font-medium text-white transition hover:bg-[#2856db]">
           Open Assistant
         </button>
       </div>
