@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   ArrowLeft,
   Lightbulb,
@@ -26,6 +26,56 @@ const AIAssistant = () => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef(null);
+
+  const startVoiceInput = () => {
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      alert("Voice input is not supported in this browser.");
+      return;
+    }
+
+    if (isListening) {
+      recognitionRef.current?.stop();
+      setIsListening(false);
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+
+    recognition.lang = "en-IN";
+    recognition.continuous = false;
+    recognition.interimResults = true;
+
+    recognition.onstart = () => {
+      setIsListening(true);
+    };
+
+    recognition.onresult = (event) => {
+      let transcript = "";
+
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript;
+      }
+
+      setMessage(transcript);
+    };
+
+    recognition.onerror = (event) => {
+      console.error("Speech recognition error:", event.error);
+      setIsListening(false);
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognitionRef.current = recognition;
+    recognition.start();
+  };
 
   const sendMessage = async (text = message) => {
     const trimmedText = text.trim();
@@ -225,17 +275,22 @@ const AIAssistant = () => {
                 type="text"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder="Ask something..."
+                placeholder={isListening ? "Listening..." : "Ask something..."}
                 autoComplete="off"
                 className="w-full rounded-xl border border-slate-700/80 bg-[#131b2e] py-3 pl-4 pr-11 text-sm text-slate-100 outline-none placeholder:text-slate-400 transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
               />
 
               <button
                 type="button"
-                title="Voice input"
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 transition-colors hover:text-slate-200"
+                title={isListening ? "Stop voice input" : "Voice input"}
+                onClick={startVoiceInput}
+                className={`absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1.5 transition-all ${
+                  isListening
+                    ? "bg-red-500/15 text-red-400"
+                    : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+                }`}
               >
-                <Mic size={20} />
+                <Mic size={20} className={isListening ? "animate-pulse" : ""} />
               </button>
             </div>
 
