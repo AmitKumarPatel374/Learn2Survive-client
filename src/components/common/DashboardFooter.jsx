@@ -1,6 +1,8 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom';
 
 const DashboardFooter = () => {
+  const navigate = useNavigate();
   return (
     <footer className="ml-80 border-t border-white/10 bg-[#0b1326]/70 backdrop-blur-xl">
       <div className="flex h-14 items-center justify-between px-8 text-sm text-[#8e909f]">
@@ -11,15 +13,15 @@ const DashboardFooter = () => {
 
         <div className="flex items-center gap-6">
 
-          <button className="hover:text-white transition">
+          <button onClick={()=>navigate('/privacy-policy')} className="hover:text-white transition">
             Privacy
           </button>
 
-          <button className="hover:text-white transition">
+          <button onClick={()=>navigate('/terms-conditions')} className="hover:text-white transition">
             Terms
           </button>
 
-          <button className="hover:text-white transition">
+          <button onClick={()=>navigate('/contact-support')} className="hover:text-white transition">
             Support
           </button>
 
