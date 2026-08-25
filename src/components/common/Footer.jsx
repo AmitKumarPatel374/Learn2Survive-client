@@ -53,28 +53,28 @@ const Footer = () => {
 
             <div className="space-y-3">
               <a
-                href="#"
+                href="/"
                 className="block text-[#c4c5d5] transition hover:text-[#b8c4ff]"
               >
                 Home
               </a>
 
               <a
-                href="#"
+                href="/dashboard/learning-center"
                 className="block text-[#c4c5d5] transition hover:text-[#b8c4ff]"
               >
                 Learning Center
               </a>
 
               <a
-                href="#"
+                href="/dashboard/quizzes"
                 className="block text-[#c4c5d5] transition hover:text-[#b8c4ff]"
               >
                 Quizzes
               </a>
 
               <a
-                href="#"
+                href="/dashboard/emergency-contact"
                 className="block text-[#c4c5d5] transition hover:text-[#b8c4ff]"
               >
                 Emergency Contacts
