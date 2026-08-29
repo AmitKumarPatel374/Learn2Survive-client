@@ -1,6 +1,6 @@
 import { Info, TriangleAlert } from "lucide-react"
 
-const DisasterOverview = ({ disaster }) => {
+const DisasterOverview = ({ disaster, completed, onToggle }) => {
   const overview = disaster?.overview
 
   return (
@@ -9,17 +9,34 @@ const DisasterOverview = ({ disaster }) => {
         <div className="rounded-3xl border border-white/10 bg-[#171f33]/40 p-8 backdrop-blur-xl">
           {/* Heading */}
 
-          <div className="mb-6 flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#4edea3]/10">
-              <Info
-                size={24}
-                className="text-[#4edea3]"
-              />
+          {/* Heading */}
+
+          <div className="mb-6 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#4edea3]/10">
+                <Info
+                  size={24}
+                  className="text-[#4edea3]"
+                />
+              </div>
+
+              <h2 className="text-3xl font-bold text-white">
+                {overview?.title || "About This Disaster"}
+              </h2>
             </div>
 
-            <h2 className="text-3xl font-bold text-white">
-              {overview?.title || "About This Disaster"}
-            </h2>
+            {/* Mark as studied */}
+
+            <label className="flex cursor-pointer items-center gap-2 text-sm text-[#c4c5d5]">
+              <input
+                type="checkbox"
+                checked={completed}
+                onChange={onToggle}
+                className="h-5 w-5 cursor-pointer accent-[#4edea3]"
+              />
+
+              <span>Mark as studied</span>
+            </label>
           </div>
 
           {/* Description */}

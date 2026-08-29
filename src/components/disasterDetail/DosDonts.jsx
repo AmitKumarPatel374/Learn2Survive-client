@@ -1,6 +1,6 @@
 import { CheckCircle2, XCircle } from "lucide-react"
 
-const DosDonts = ({ disaster }) => {
+const DosDonts = ({ disaster, completed, onToggle }) => {
   const dos = disaster?.dosDonts?.dos
   const donts = disaster?.dosDonts?.donts
 
@@ -10,14 +10,27 @@ const DosDonts = ({ disaster }) => {
   return (
     <section className="px-6 py-8 lg:px-10">
       <div className="mx-auto max-w-7xl">
-        <div className="mb-8">
-          <h2 className="text-[32px] font-bold text-white">
-            Safety Guidelines
-          </h2>
+        <div className="mb-8 flex items-start justify-between gap-4">
+          <div>
+            <h2 className="text-[32px] font-bold text-white">Safety Guidelines</h2>
 
-          <p className="mt-2 text-[#8e909f]">
-            Follow these essential do's and don'ts to minimize risks during a disaster.
-          </p>
+            <p className="mt-2 text-[#8e909f]">
+              Follow these essential do's and don'ts to minimize risks during a disaster.
+            </p>
+          </div>
+
+          {/* Mark as studied */}
+
+          <label className="flex shrink-0 cursor-pointer items-center gap-2 text-sm text-[#c4c5d5]">
+            <input
+              type="checkbox"
+              checked={completed}
+              onChange={onToggle}
+              className="h-5 w-5 cursor-pointer accent-[#4edea3]"
+            />
+
+            <span>Mark as studied</span>
+          </label>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-2">
@@ -38,9 +51,7 @@ const DosDonts = ({ disaster }) => {
                 </h3>
 
                 {dos?.description && (
-                  <p className="mt-1 text-sm text-[#8e909f]">
-                    {dos.description}
-                  </p>
+                  <p className="mt-1 text-sm text-[#8e909f]">{dos.description}</p>
                 )}
               </div>
             </div>
@@ -56,9 +67,7 @@ const DosDonts = ({ disaster }) => {
                     className="mt-0.5 shrink-0 text-emerald-400"
                   />
 
-                  <p className="text-[15px] leading-7 text-[#c4c5d5]">
-                    {item}
-                  </p>
+                  <p className="text-[15px] leading-7 text-[#c4c5d5]">{item}</p>
                 </div>
               ))}
             </div>
@@ -81,9 +90,7 @@ const DosDonts = ({ disaster }) => {
                 </h3>
 
                 {donts?.description && (
-                  <p className="mt-1 text-sm text-[#8e909f]">
-                    {donts.description}
-                  </p>
+                  <p className="mt-1 text-sm text-[#8e909f]">{donts.description}</p>
                 )}
               </div>
             </div>
@@ -99,9 +106,7 @@ const DosDonts = ({ disaster }) => {
                     className="mt-0.5 shrink-0 text-red-400"
                   />
 
-                  <p className="text-[15px] leading-7 text-[#c4c5d5]">
-                    {item}
-                  </p>
+                  <p className="text-[15px] leading-7 text-[#c4c5d5]">{item}</p>
                 </div>
               ))}
             </div>
