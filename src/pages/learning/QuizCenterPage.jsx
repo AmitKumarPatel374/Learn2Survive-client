@@ -32,27 +32,27 @@ const QuizCenterPage = () => {
         setHistory(historyData)
 
         const mergedQuizzes = quizzesData.map((quiz) => {
-          const attempt = historyData.find(
-            (item) =>
-              item.quizId?.toString() ===
-              quiz._id.toString()
-          )
+          const quizAttempts = historyData
+            .filter((item) => item.quizId?.toString() === quiz._id.toString())
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+
+          const latestAttempt = quizAttempts[0]
 
           return {
             ...quiz,
-            completed: attempt?.status === "Completed",
-            inProgress: attempt?.status === "In Progress",
-            score: attempt?.percentage || 0,
-            attemptId: attempt?.attemptId,
+            completed: latestAttempt?.status === "Completed",
+
+            inProgress: latestAttempt?.status === "In Progress",
+
+            score: latestAttempt?.percentage || 0,
+
+            attemptId: latestAttempt?.attemptId,
           }
         })
 
         setQuizzes(mergedQuizzes)
       } catch (error) {
-        toast.error(
-          error.response?.data?.message ||
-            "Failed to fetch quizzes."
-        )
+        toast.error(error.response?.data?.message || "Failed to fetch quizzes.")
       } finally {
         setLoading(false)
       }
@@ -61,37 +61,27 @@ const QuizCenterPage = () => {
     fetchData()
   }, [])
 
-  const featuredQuiz =
-    quizzes.length > 0 ? quizzes[0] : null
+  const featuredQuiz = quizzes.length > 0 ? quizzes[0] : null
 
-  const continueQuiz =
-    history.find(
-      (quiz) => quiz.status === "In Progress"
-    ) || null
+  const continueQuiz = history.find((quiz) => quiz.status === "In Progress") || null
 
-  const completedCount = history.filter(
-    (quiz) => quiz.status === "Completed"
-  ).length
+  const completedQuizIds = new Set(
+    history.filter((quiz) => quiz.status === "Completed").map((quiz) => quiz.quizId?.toString())
+  )
+
+  const completedCount = completedQuizIds.size
 
   const stats = {
     totalQuizzes: quizzes.length,
     completed: completedCount,
     remaining: quizzes.length - completedCount,
     bestScore:
-      history.length > 0
-        ? `${Math.max(
-            ...history.map(
-              (quiz) => quiz.percentage || 0
-            )
-          )}%`
-        : "--",
+      history.length > 0 ? `${Math.max(...history.map((quiz) => quiz.percentage || 0))}%` : "--",
   }
 
   const filteredQuizzes = useMemo(() => {
     return quizzes.filter((quiz) => {
-      const matchesSearch = quiz.title
-        .toLowerCase()
-        .includes(search.toLowerCase())
+      const matchesSearch = quiz.title.toLowerCase().includes(search.toLowerCase())
 
       if (!matchesSearch) return false
 
@@ -115,9 +105,7 @@ const QuizCenterPage = () => {
   }, [quizzes, search, selectedFilter])
 
   // Hide dashboard cards while searching/filtering
-  const isFiltering =
-    selectedFilter !== "all" ||
-    search.trim() !== ""
+  const isFiltering = selectedFilter !== "all" || search.trim() !== ""
 
   if (loading) {
     return (
@@ -144,20 +132,14 @@ const QuizCenterPage = () => {
           <section className="px-6 py-8 lg:px-10">
             <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-3">
               <div className="lg:col-span-2">
-                {featuredQuiz && (
-                  <FeaturedQuiz quiz={featuredQuiz} />
-                )}
+                {featuredQuiz && <FeaturedQuiz quiz={featuredQuiz} />}
               </div>
 
               <QuizSummary stats={stats} />
             </div>
           </section>
 
-          {continueQuiz && (
-            <ContinueLearning
-              quiz={continueQuiz}
-            />
-          )}
+          {continueQuiz && <ContinueLearning quiz={continueQuiz} />}
         </>
       )}
 
