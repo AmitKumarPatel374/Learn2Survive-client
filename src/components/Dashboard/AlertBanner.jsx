@@ -79,7 +79,7 @@ const AlertBanner = () => {
 
               <button
                 onClick={() =>
-                  navigate("/dashboard/diaster/detail")
+                   navigate(`/dashboard/disaster/detail/${alert.id}`)
                 }
                 className="flex items-center gap-2 whitespace-nowrap rounded-xl bg-red-500 px-6 py-3 text-sm font-semibold text-white transition-all duration-300 hover:brightness-110 active:scale-95"
               >

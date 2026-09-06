@@ -7,6 +7,7 @@ import LearningCenterPage from '../pages/learning/LearningCenterPage'
 import QuizCenterPage from '../pages/learning/QuizCenterPage'
 import QuizStart from '../pages/learning/QuizStart'
 import EmergencyContactsPage from '../pages/dashboard/EmergencyContactsPage'
+import DisasterAlertDetail from '../pages/dashboard/DisasterAlertDetail'
 
 const DashboardRoutes = () => {
   return (
@@ -18,6 +19,7 @@ const DashboardRoutes = () => {
       <Route path="quizzes" element={<QuizCenterPage />} />
       <Route path="quiz/:quizId" element={<QuizStart />} />
       <Route path="emergency-contact" element={<EmergencyContactsPage />} />
+      <Route path="disaster/detail/:alertId" element={<DisasterAlertDetail />} />
 
       <Route path="*" element={<PageNotFound />} />
     </Routes>
