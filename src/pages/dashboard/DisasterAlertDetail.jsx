@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 
 import apiInstance from "../../config/apiInstance";
+import { getSafetyGuideSlug } from "../../utils/disasterGuide"
 
 const DisasterAlertDetail = () => {
   const { alertId } = useParams();
@@ -59,6 +60,8 @@ const DisasterAlertDetail = () => {
     fetchAlert();
   }, [alertId]);
 
+  const guideSlug = getSafetyGuideSlug(alert?.details?.event)
+
   const formatDateTime = (date) => {
     if (!date) return "Not available";
 
@@ -86,6 +89,7 @@ const DisasterAlertDetail = () => {
         return "bg-gray-500/20 text-gray-300 border-gray-500/30";
     }
   };
+
 
   if (loading) {
     return (
@@ -348,7 +352,7 @@ const DisasterAlertDetail = () => {
 
             {/* Instructions */}
 
-            <div className="mt-6 rounded-2xl border border-yellow-500/20 bg-yellow-500/5 p-6">
+            <div className="mt-6 rounded-2xl border border-yellow-500/20 bg-yellow-500/5 p-6 flex justify-between items-center flex-col md:flex-row gap-4">
               <div className="flex items-center gap-3">
                 <ShieldAlert size={21} className="text-yellow-300" />
 
@@ -358,7 +362,7 @@ const DisasterAlertDetail = () => {
               </div>
 
               <button
-                onClick={() => navigate("/dashboard/disaster/flood")}
+                onClick={() => navigate(`/dashboard/disaster/${guideSlug}`)}
                 className="flex items-center gap-2 rounded-xl bg-yellow-500 px-5 py-3 text-sm font-semibold text-black transition hover:brightness-110"
               >
                 <ShieldAlert size={18} />
