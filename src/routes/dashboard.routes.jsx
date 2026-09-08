@@ -9,6 +9,7 @@ import QuizStart from '../pages/learning/QuizStart'
 import EmergencyContactsPage from '../pages/dashboard/EmergencyContactsPage'
 import DisasterAlertDetail from '../pages/dashboard/DisasterAlertDetail'
 import AIAssistant from '../pages/dashboard/AIAssistant'
+import UnderConstruction from '../pages/common/UnderConstruction'
 
 const DashboardRoutes = () => {
   return (
@@ -22,6 +23,7 @@ const DashboardRoutes = () => {
       <Route path="emergency-contact" element={<EmergencyContactsPage />} />
       <Route path="disaster/detail/:alertId" element={<DisasterAlertDetail />} />
       <Route path="assistant/chat" element={<AIAssistant />} />
+      <Route path="under-construction" element={<UnderConstruction />} />
 
       <Route path="*" element={<PageNotFound />} />
     </Routes>

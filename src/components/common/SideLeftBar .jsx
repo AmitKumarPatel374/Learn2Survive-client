@@ -41,7 +41,7 @@ const SideLeftBar = () => {
     {
       title: "Simulations",
       icon: Bot,
-      path: "/dashboard/simulations",
+      path: "/dashboard/under-construction",
     },
     {
       title: "Emergency Contacts",
