@@ -33,7 +33,7 @@ const ContactSupport = () => {
                   </h3>
 
                   <p className="mt-1 text-gray-600">
-                    support@learn2survive.com
+                    learn2Survive@gmail.com
                   </p>
                 </div>
               </div>
@@ -51,7 +51,7 @@ const ContactSupport = () => {
                   </h3>
 
                   <p className="mt-1 text-gray-600">
-                    +91 XXXXX XXXXX
+                    +91 9753005051
                   </p>
                 </div>
               </div>
