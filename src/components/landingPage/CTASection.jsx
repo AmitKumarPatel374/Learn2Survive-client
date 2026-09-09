@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 const CTASection = () => {
     const navigate = useNavigate()
   return (
-    <section className="mb-24 px-6 lg:px-10">
+    <section className="py-6 px-6 lg:px-10">
 
       <div className="mx-auto max-w-[1280px]">
 

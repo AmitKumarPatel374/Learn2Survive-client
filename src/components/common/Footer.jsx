@@ -96,21 +96,21 @@ const Footer = () => {
 
             <div className="space-y-3">
               <a
-                href="#"
+                href="/contact-support"
                 className="block text-[#c4c5d5] transition hover:text-[#b8c4ff]"
               >
                 Help & Support
               </a>
 
               <a
-                href="#"
+                href="/privacy-policy"
                 className="block text-[#c4c5d5] transition hover:text-[#b8c4ff]"
               >
                 Privacy Policy
               </a>
 
               <a
-                href="#"
+                href="/terms-conditions"
                 className="block text-[#c4c5d5] transition hover:text-[#b8c4ff]"
               >
                 Terms & Conditions
