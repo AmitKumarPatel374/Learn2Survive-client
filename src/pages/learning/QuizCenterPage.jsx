@@ -12,23 +12,26 @@ import apiInstance from "../../config/apiInstance"
 const QuizCenterPage = () => {
   const [search, setSearch] = useState("")
   const [selectedFilter, setSelectedFilter] = useState("all")
-
   const [quizzes, setQuizzes] = useState([])
   const [history, setHistory] = useState([])
+  const [recommendedQuiz, setRecommendedQuiz] = useState(null)
 
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [quizRes, historyRes] = await Promise.all([
+        const [quizRes, historyRes, recommendedQuizRes] = await Promise.all([
           apiInstance.get("/quiz"),
           apiInstance.get("/quiz/history"),
+          apiInstance.get("/quiz/recommended"),
         ])
 
         const quizzesData = quizRes.data.data || []
         const historyData = historyRes.data.data || []
+        const recommendedQuizData = recommendedQuizRes.data.data || null
 
+        setRecommendedQuiz(recommendedQuizData)
         setHistory(historyData)
 
         const mergedQuizzes = quizzesData.map((quiz) => {
@@ -61,7 +64,7 @@ const QuizCenterPage = () => {
     fetchData()
   }, [])
 
-  const featuredQuiz = quizzes.length > 0 ? quizzes[0] : null
+  const featuredQuiz = recommendedQuiz
 
   const continueQuiz = history.find((quiz) => quiz.status === "In Progress") || null
 
