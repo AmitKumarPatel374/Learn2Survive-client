@@ -1,5 +1,6 @@
 import { MapPin, Globe } from "lucide-react"
 import { useFormContext } from "react-hook-form"
+import { indianStates } from "../../data/indianStates"
 
 const LocationDetails = () => {
   const {
@@ -61,13 +62,16 @@ const LocationDetails = () => {
               required: "State is required",
             })}
           >
-            <option value="">Select State</option>
+            <option value="">Select State / Union Territory</option>
 
-            <option value="Madhya Pradesh">Madhya Pradesh</option>
-            <option value="Uttar Pradesh">Uttar Pradesh</option>
-            <option value="Maharashtra">Maharashtra</option>
-            <option value="Delhi">Delhi</option>
-            <option value="Karnataka">Karnataka</option>
+            {indianStates.map((state) => (
+              <option
+                key={state}
+                value={state}
+              >
+                {state}
+              </option>
+            ))}
           </select>
 
           {errors.location?.state && (
