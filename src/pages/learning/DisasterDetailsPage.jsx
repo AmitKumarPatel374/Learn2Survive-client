@@ -14,14 +14,14 @@ const DisasterDetailsPage = () => {
   const { slug } = useParams()
   const [disaster, setDisaster] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [completedSections, setCompletedSections] = useState([])
 
   const getDisaster = async () => {
     try {
       setLoading(true)
 
       const response = await apiInstance.get(`/disasters/${slug}`)
-      console.log(response);
-      
+      console.log(response)
 
       if (response.data.success) {
         setDisaster(response.data.data)
@@ -35,25 +35,85 @@ const DisasterDetailsPage = () => {
     }
   }
 
+  const toggleSection = async (section) => {
+    const isCompleted = completedSections.includes(section)
+
+    try {
+      const response = await apiInstance.patch("/disasters/progress", {
+        disasterSlug: slug,
+        section,
+        completed: !isCompleted,
+      })
+
+      if (response.data.success) {
+        setCompletedSections(response.data.data.completedSections)
+      }
+    } catch (error) {
+      console.error("Learning progress update error:", error)
+    }
+  }
+
+  const getProgress = async () => {
+  try {
+    const response = await apiInstance.get(
+      `/disasters/progress/${slug}`
+    )
+
+    if (response.data.success) {
+      setCompletedSections(
+        response.data.data.completedSections || []
+      )
+    }
+  } catch (error) {
+    console.error("Get learning progress error:", error)
+    setCompletedSections([])
+  }
+}
+
   useEffect(() => {
-    getDisaster()
-  }, [slug])
+  getDisaster()
+  getProgress()
+}, [slug])
+
 
   return (
     <main className="min-h-screen bg-[#0b1326] text-white">
       <DisasterHero disaster={disaster} />
 
-      <DisasterOverview disaster={disaster} />
+      <DisasterOverview
+        disaster={disaster}
+        completed={completedSections.includes("overview")}
+        onToggle={() => toggleSection("overview")}
+      />
+      <PreparednessPhases
+        disaster={disaster}
+        completed={completedSections.includes("preparedness")}
+        onToggle={() => toggleSection("preparedness")}
+      />
 
-      <PreparednessPhases disaster={disaster} />
+      <DosDonts
+        disaster={disaster}
+        completed={completedSections.includes("dosDonts")}
+        onToggle={() => toggleSection("dosDonts")}
+      />
 
-      <DosDonts disaster={disaster} />
+      <EmergencyKit
+        disaster={disaster}
+        completed={completedSections.includes("emergencyKit")}
+        onToggle={() => toggleSection("emergencyKit")}
+      />
 
-      <EmergencyKit disaster={disaster} />
+      <EducationalResources
+        disaster={disaster}
+        completed={completedSections.includes("resources")}
+        onToggle={() => toggleSection("resources")}
+      />
 
-      <EducationalResources disaster={disaster} />
-
-      <FAQSection disaster={disaster} />
+      <FAQSection
+        disaster={disaster}
+        completed={completedSections.includes("faq")}
+        onToggle={() => toggleSection("faq")}
+      />
 
       <BottomCTA disaster={disaster} />
     </main>

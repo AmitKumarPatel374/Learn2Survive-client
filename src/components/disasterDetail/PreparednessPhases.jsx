@@ -1,6 +1,6 @@
 import { ShieldCheck, TriangleAlert, HeartHandshake } from "lucide-react"
 
-const PreparednessPhases = ({ disaster }) => {
+const PreparednessPhases = ({ disaster, completed, onToggle }) => {
   const preparedness = disaster?.preparedness
 
   const phases = [
@@ -32,12 +32,27 @@ const PreparednessPhases = ({ disaster }) => {
       <div className="mx-auto max-w-7xl">
         {/* Heading */}
 
-        <div className="mb-8">
-          <h2 className="text-[32px] font-bold text-white">Disaster Preparedness</h2>
+        <div className="mb-8 flex items-start justify-between gap-4">
+          <div>
+            <h2 className="text-[32px] font-bold text-white">Disaster Preparedness</h2>
 
-          <p className="mt-2 text-[#8e909f]">
-            Learn what you should do before, during and after a disaster.
-          </p>
+            <p className="mt-2 text-[#8e909f]">
+              Learn what you should do before, during and after a disaster.
+            </p>
+          </div>
+
+          {/* Mark as studied */}
+
+          <label className="flex shrink-0 cursor-pointer items-center gap-2 text-sm text-[#c4c5d5]">
+            <input
+              type="checkbox"
+              checked={completed}
+              onChange={onToggle}
+              className="h-5 w-5 cursor-pointer accent-[#4edea3]"
+            />
+
+            <span>Mark as studied</span>
+          </label>
         </div>
 
         {/* Cards */}

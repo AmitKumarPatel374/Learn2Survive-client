@@ -113,7 +113,7 @@ const iconMap = {
   },
 }
 
-const EmergencyKit = ({ disaster }) => {
+const EmergencyKit = ({ disaster, completed, onToggle }) => {
   const emergencyKit = disaster?.emergencyKit
 
   const kitItems = emergencyKit?.items || []
@@ -123,12 +123,29 @@ const EmergencyKit = ({ disaster }) => {
       <div className="mx-auto max-w-7xl">
         {/* Heading */}
 
-        <div className="mb-8">
-          <h2 className="text-[32px] font-bold text-white">
-            {emergencyKit?.title || "Emergency Kit Checklist"}
-          </h2>
+        {/* Heading */}
 
-          <p className="mt-2 text-[#8e909f]">{emergencyKit?.description}</p>
+        <div className="mb-8 flex items-start justify-between gap-4">
+          <div>
+            <h2 className="text-[32px] font-bold text-white">
+              {emergencyKit?.title || "Emergency Kit Checklist"}
+            </h2>
+
+            <p className="mt-2 text-[#8e909f]">{emergencyKit?.description}</p>
+          </div>
+
+          {/* Mark as studied */}
+
+          <label className="flex shrink-0 cursor-pointer items-center gap-2 text-sm text-[#c4c5d5]">
+            <input
+              type="checkbox"
+              checked={completed}
+              onChange={onToggle}
+              className="h-5 w-5 cursor-pointer accent-[#4edea3]"
+            />
+
+            <span>Mark as studied</span>
+          </label>
         </div>
 
         {/* Kit Grid */}
