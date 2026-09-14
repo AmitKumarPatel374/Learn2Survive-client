@@ -19,6 +19,7 @@ import LandingPage from "../pages/public/LandingPage"
 import PrivacyPolicy from "../pages/public/PrivacyPolicy"
 import TermsAndConditions from "../pages/public/TermsAndConditions"
 import ContactSupport from "../pages/public/ContactSupport"
+import CreateQuizPage from "../pages/public/CreateQuizPage"
 
 const AppRoutes = () => {
   return (
@@ -44,6 +45,10 @@ const AppRoutes = () => {
         <Route
           path="/about"
           element={<About />}
+        />
+        <Route
+          path="/quiz-create"
+          element={<CreateQuizPage /> }
         />
         <Route
           path="/learning/*"
