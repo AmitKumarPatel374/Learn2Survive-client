@@ -10,6 +10,7 @@ import EmergencyContactsPage from '../pages/dashboard/EmergencyContactsPage'
 import DisasterAlertDetail from '../pages/dashboard/DisasterAlertDetail'
 import AIAssistant from '../pages/dashboard/AIAssistant'
 import UnderConstruction from '../pages/common/UnderConstruction'
+import SimulationsRoutes from './simulations.routes'
 
 const DashboardRoutes = () => {
   return (
@@ -20,6 +21,7 @@ const DashboardRoutes = () => {
       <Route path="disaster/:slug" element={<DisasterDetailsPage />} />
       <Route path="quizzes" element={<QuizCenterPage />} />
       <Route path="quiz/:quizId" element={<QuizStart />} />
+      <Route path="simulations" element={<SimulationsRoutes />} />
       <Route path="emergency-contact" element={<EmergencyContactsPage />} />
       <Route path="disaster/detail/:alertId" element={<DisasterAlertDetail />} />
       <Route path="assistant/chat" element={<AIAssistant />} />
