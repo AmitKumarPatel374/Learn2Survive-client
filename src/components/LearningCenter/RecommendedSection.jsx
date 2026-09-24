@@ -11,13 +11,34 @@ const RecommendedSection = () => {
 
   const getRecommendedDisasters = async () => {
     try {
-      const { data } = await apiInstance.get("/disasters/recommended")
+      const recommendationResponse = await apiInstance.get("/disasters/disaster-recommendation")
 
-      if (data.success) {
-        setModules(data.data)
+      if (!recommendationResponse.data.success) {
+        return
       }
+
+      const recommendations = recommendationResponse.data.data || []
+
+      const disasterPromises = recommendations.slice(0, 4).map(async (item) => {
+        try {
+          const response = await apiInstance.get(`/disasters/${item.disaster}`)
+
+          if (response.data.success) {
+            return response.data.data
+          }
+
+          return null
+        } catch (error) {
+          console.error(`Failed to fetch disaster: ${item.disaster}`, error)
+          return null
+        }
+      })
+
+      const disasterResults = await Promise.all(disasterPromises)
+
+      setModules(disasterResults.filter(Boolean))
     } catch (error) {
-      console.log(error)
+      console.error("Failed to fetch recommended disasters:", error)
     } finally {
       setLoading(false)
     }
@@ -44,13 +65,10 @@ const RecommendedSection = () => {
 
         <div className="mb-7 flex items-center justify-between">
           <div>
-            <h2 className="text-[32px] font-bold text-white">
-              Recommended For You
-            </h2>
+            <h2 className="text-[32px] font-bold text-white">Recommended For You</h2>
 
             <p className="mt-2 text-[#8e909f]">
-              Continue learning with our most engaging disaster awareness
-              modules.
+              Continue learning with our most engaging disaster awareness modules.
             </p>
           </div>
 
@@ -101,18 +119,12 @@ const RecommendedSection = () => {
                   </div>
                 </div>
 
-                <h3 className="text-2xl font-bold text-white">
-                  {module.name}
-                </h3>
+                <h3 className="text-2xl font-bold text-white">{module.name}</h3>
 
-                <p className="mt-3 leading-7 text-[#c4c5d5]">
-                  {module.shortDescription}
-                </p>
+                <p className="mt-3 leading-7 text-[#c4c5d5]">{module.shortDescription}</p>
 
                 <button
-                  onClick={() =>
-                    navigate(`/dashboard/disaster/${module.slug}`)
-                  }
+                  onClick={() => navigate(`/dashboard/disaster/${module.slug}`)}
                   className="mt-6 flex items-center gap-2 rounded-xl bg-[#1e40af] px-5 py-3 text-sm font-semibold text-white transition-all hover:bg-[#2952d1]"
                 >
                   Start Learning
