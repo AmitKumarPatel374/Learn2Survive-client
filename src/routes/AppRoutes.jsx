@@ -20,6 +20,7 @@ import PrivacyPolicy from "../pages/public/PrivacyPolicy"
 import TermsAndConditions from "../pages/public/TermsAndConditions"
 import ContactSupport from "../pages/public/ContactSupport"
 import CreateQuizPage from "../pages/public/CreateQuizPage"
+import SimulationsRoutes from "./simulations.routes"
 
 const AppRoutes = () => {
   return (
@@ -72,6 +73,7 @@ const AppRoutes = () => {
           path="/dashboard/*"
           element={<DashboardRoutes />}
         />
+
         <Route
           path="/user/*"
           element={<UserRoutes />}
