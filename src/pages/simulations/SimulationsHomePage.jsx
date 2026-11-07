@@ -64,7 +64,7 @@ const SimulationsHomePage = () => {
 
     // Navigate to selected game
     const handlePlayGame = (game) => {
-        navigate(`/simulations/${game._id}`);
+        navigate(`/game/${game._id}`);
     };
 
     return (
