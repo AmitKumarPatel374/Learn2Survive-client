@@ -7,6 +7,7 @@ function SimulationsRoutes() {
     <>
         <Routes>
             <Route path="" element= {<SimulationsHomePage/>} />
+            
         </Routes>
     </>
   )

@@ -80,6 +80,7 @@ const AppRoutes = () => {
         />
       </Route>
 
+
       {/* Auth Layout */}
       <Route element={<AuthLayout />}>
         <Route
