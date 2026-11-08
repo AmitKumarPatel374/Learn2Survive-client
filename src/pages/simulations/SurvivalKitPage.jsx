@@ -5,6 +5,10 @@ import SurvivalKitGame from "../../components/simulations/survival-kit/SurvivalK
 import GameResults from "../../components/simulations/survival-kit/GameResults";
 
 import apiInstance from "../../config/apiInstance";
+import useGameAudio from "../../hooks/useGameAudio";
+
+const INTRO_MUSIC = "/audio/music/intro.mp3";
+const GAMEPLAY_MUSIC = "/audio/music/gamePlay.mp3";
 
 const SurvivalKitPage = ({ game }) => {
     const [stage, setStage] = useState("intro");
@@ -24,7 +28,21 @@ const SurvivalKitPage = ({ game }) => {
     const items = game.gameConfig?.items || [];
     const selectionLimit = game.gameConfig?.selectionLimit || 6;
 
-    // Fetch previous game progress
+    // One audio manager shared by every game screen.
+    const {
+        muted,
+        playMusic,
+        playSound,
+        toggleMute,
+    } = useGameAudio();
+
+    // Prepare the intro track.
+    // It will not play until the user enables sound.
+    useEffect(() => {
+        playMusic(INTRO_MUSIC, 0.35);
+    }, [playMusic]);
+
+    // Fetch previous game progress.
     useEffect(() => {
         let active = true;
 
@@ -40,13 +58,9 @@ const SurvivalKitPage = ({ game }) => {
                 if (!active) return;
 
                 setPlayed(result.data.played);
-
-                if (result.data.played) {
-                    setProgress(result.data.data);
-                } else {
-                    setProgress(null);
-                }
-
+                setProgress(
+                    result.data.played ? result.data.data : null
+                );
             } catch (err) {
                 console.error("Progress fetch error:", err);
 
@@ -56,7 +70,9 @@ const SurvivalKitPage = ({ game }) => {
                     );
                 }
             } finally {
-                if (active) setLoading(false);
+                if (active) {
+                    setLoading(false);
+                }
             }
         };
 
@@ -67,44 +83,77 @@ const SurvivalKitPage = ({ game }) => {
         };
     }, [game._id]);
 
-    // Start game
+    // Start a fresh game.
     const startGame = () => {
         setSelectedItems([]);
+        setScore(0);
         setSaveError("");
+
+        playMusic(GAMEPLAY_MUSIC, 0.95);
         setStage("playing");
     };
 
-    // Submit answers and save score
-    const submitGame = async (selected) => {
-    const totalScore = selected.reduce(
-        (total, item) => total + Number(item.rating),
-        0
-    );
-
-    setSelectedItems(selected);
-    setScore(totalScore);
-    setStage("results");
-    setSaving(true);
-    setSaveError("");
-
-    try {
-        const response = await apiInstance.post(
-            `/simulation/score/${game._id}`,
-            { score: totalScore }
+    // Quit the current game and return to intro.
+    const handleQuit = () => {
+        const confirmed = window.confirm(
+            "Are you sure you want to quit this challenge? Your current selections will be lost."
         );
 
-        if (response.data.success) {
-            setProgress(response.data.data);
-            setPlayed(true);
-        }
-    } catch (err) {
-        console.error("Score saving error:", err);
-        setSaveError("Unable to save your score.");
-    } finally {
-        setSaving(false);
-    }
-};
+        if (!confirmed) return;
 
+        setSelectedItems([]);
+        setScore(0);
+        setSaveError("");
+
+        playMusic(INTRO_MUSIC, 0.35);
+        setStage("intro");
+    };
+
+    // Return to intro after results.
+    const handlePlayAgain = () => {
+        setSelectedItems([]);
+        setScore(0);
+        setSaveError("");
+
+        playMusic(INTRO_MUSIC, 0.35);
+        setStage("intro");
+    };
+
+    // Submit answers and save score.
+    const submitGame = async (selected) => {
+        const totalScore = selected.reduce(
+            (total, item) => total + Number(item.rating),
+            0
+        );
+
+        setSelectedItems(selected);
+        setScore(totalScore);
+
+        playMusic(INTRO_MUSIC, 0.25);
+        setStage("results");
+
+        setSaving(true);
+        setSaveError("");
+
+        try {
+            const response = await apiInstance.post(
+                `/simulation/score/${game._id}`,
+                { score: totalScore }
+            );
+
+            if (response.data.success) {
+                setProgress(response.data.data);
+                setPlayed(true);
+            }
+        } catch (err) {
+            console.error("Score saving error:", err);
+            setSaveError("Unable to save your score.");
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    // Loading screen.
     if (loading) {
         return (
             <div className="min-h-screen bg-[#080f1e] flex items-center justify-center text-white">
@@ -113,6 +162,7 @@ const SurvivalKitPage = ({ game }) => {
         );
     }
 
+    // Error screen.
     if (error) {
         return (
             <div className="min-h-screen bg-[#080f1e] flex flex-col items-center justify-center text-white gap-4 px-5">
@@ -128,6 +178,7 @@ const SurvivalKitPage = ({ game }) => {
         );
     }
 
+    // Empty game configuration.
     if (!items.length) {
         return (
             <div className="min-h-screen bg-[#080f1e] flex items-center justify-center text-white">
@@ -143,6 +194,9 @@ const SurvivalKitPage = ({ game }) => {
                     game={game}
                     progress={played ? progress : null}
                     onStart={startGame}
+                    muted={muted}
+                    onToggleMute={toggleMute}
+                    playSound={playSound}
                 />
             )}
 
@@ -151,6 +205,10 @@ const SurvivalKitPage = ({ game }) => {
                     items={items}
                     selectionLimit={selectionLimit}
                     onSubmit={submitGame}
+                    onQuit={handleQuit}
+                    muted={muted}
+                    onToggleMute={toggleMute}
+                    playSound={playSound}
                 />
             )}
 
@@ -159,9 +217,12 @@ const SurvivalKitPage = ({ game }) => {
                     selectedItems={selectedItems}
                     score={score}
                     progress={progress}
-                    onPlayAgain={startGame}
+                    onPlayAgain={handlePlayAgain}
                     saving={saving}
                     saveError={saveError}
+                    muted={muted}
+                    onToggleMute={toggleMute}
+                    playSound={playSound}
                 />
             )}
         </>

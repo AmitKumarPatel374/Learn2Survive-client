@@ -2,8 +2,9 @@ import {
     Trophy,
     Star,
     RotateCcw,
-    ArrowLeft,
-    Target
+    Target,
+    Volume2,
+    VolumeX,
 } from "lucide-react";
 
 const GameResults = ({
@@ -12,9 +13,11 @@ const GameResults = ({
     progress,
     onPlayAgain,
     saving,
-    saveError
+    saveError,
+    muted,
+    onToggleMute,
+    playSound,
 }) => {
-
     const getMessage = () => {
         if (score >= 25) return "Excellent Preparation!";
         if (score >= 18) return "Good Effort!";
@@ -28,34 +31,69 @@ const GameResults = ({
         return "text-red-400";
     };
 
+    const handlePlayAgain = () => {
+        playSound("click");
+        onPlayAgain();
+    };
+
     return (
         <div className="h-screen overflow-hidden bg-[#080f1e] text-white flex flex-col">
 
-            {/* Header */}
+            {/* HEADER */}
             <header className="shrink-0 border-b border-white/10 bg-[#0d1729]">
                 <div className="max-w-6xl mx-auto px-5 py-3 flex items-center justify-between">
+
                     <div>
                         <p className="text-xs text-blue-400 font-bold tracking-wider">
                             SURVIVAL KIT CHALLENGE
                         </p>
+
                         <h1 className="text-lg sm:text-xl font-bold mt-1">
                             Challenge Results
                         </h1>
                     </div>
 
-                    <div className="flex items-center gap-2 text-green-400 text-sm">
-                        <Target size={17} />
-                        Completed
+                    <div className="flex items-center gap-3">
+
+                        {/* SOUND CONTROL */}
+                        <button
+                            type="button"
+                            onClick={onToggleMute}
+                            className="flex items-center justify-center gap-2 p-2 sm:px-3 sm:py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition"
+                            aria-label={muted ? "Enable sound" : "Mute sound"}
+                            title={muted ? "Enable sound" : "Mute sound"}
+                        >
+                            {muted ? (
+                                <>
+                                    <VolumeX size={18} />
+                                    <span className="hidden sm:inline text-xs">
+                                        Enable Sound
+                                    </span>
+                                </>
+                            ) : (
+                                <>
+                                    <Volume2 size={18} />
+                                    <span className="hidden sm:inline text-xs">
+                                        Mute
+                                    </span>
+                                </>
+                            )}
+                        </button>
+
+                        <div className="flex items-center gap-2 text-green-400 text-sm">
+                            <Target size={17} />
+                            <span className="hidden sm:inline">Completed</span>
+                        </div>
                     </div>
                 </div>
             </header>
 
-            {/* Main content */}
-            <main className="flex-1 min-h-0 flex items-center justify-center px-4 py-3">
+            {/* MAIN CONTENT */}
+            <main className="flex-1 min-h-0 overflow-y-auto px-4 py-3">
 
-                <div className="w-full max-w-5xl">
+                <div className="w-full max-w-5xl mx-auto">
 
-                    {/* Score section */}
+                    {/* SCORE SECTION */}
                     <div className="text-center mb-5">
 
                         <div className="w-12 h-12 rounded-full bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center mx-auto mb-2">
@@ -70,6 +108,7 @@ const GameResults = ({
                             <span className="text-5xl sm:text-6xl font-black text-blue-400">
                                 {score}
                             </span>
+
                             <span className="text-lg text-slate-500">
                                 / 30
                             </span>
@@ -79,29 +118,28 @@ const GameResults = ({
                             <div
                                 className="h-full bg-blue-500 rounded-full transition-all duration-700"
                                 style={{
-                                    width: `${(score / 30) * 100}%`
+                                    width: `${(score / 30) * 100}%`,
                                 }}
                             />
                         </div>
-
                     </div>
 
-                    {/* Performance statistics */}
+                    {/* PERFORMANCE STATISTICS */}
                     <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-5">
 
                         {[
                             {
                                 label: "Best Score",
-                                value: progress?.bestScore ?? score
+                                value: progress?.bestScore ?? score,
                             },
                             {
                                 label: "Previous Best",
-                                value: progress?.lastBestScore ?? 0
+                                value: progress?.lastBestScore ?? 0,
                             },
                             {
                                 label: "Attempts",
-                                value: progress?.attempts ?? 1
-                            }
+                                value: progress?.attempts ?? 1,
+                            },
                         ].map((stat) => (
                             <div
                                 key={stat.label}
@@ -109,6 +147,7 @@ const GameResults = ({
                             >
                                 <p className="text-xl sm:text-2xl font-bold">
                                     {stat.value}
+
                                     {stat.label !== "Attempts" && (
                                         <span className="text-xs text-slate-500">
                                             /30
@@ -121,16 +160,16 @@ const GameResults = ({
                                 </p>
                             </div>
                         ))}
-
                     </div>
 
-                    {/* Selected items only */}
+                    {/* SELECTED ITEMS */}
                     <div>
                         <div className="flex items-center justify-between mb-3">
                             <div>
                                 <h3 className="font-bold text-base sm:text-lg">
                                     Your Selected Items
                                 </h3>
+
                                 <p className="text-xs text-slate-400 mt-1">
                                     Review the importance of your choices.
                                 </p>
@@ -161,7 +200,11 @@ const GameResults = ({
                                             {item.name}
                                         </h4>
 
-                                        <p className={`text-[10px] sm:text-xs mt-1 ${getRatingColor(item.rating)}`}>
+                                        <p
+                                            className={`text-[10px] sm:text-xs mt-1 ${getRatingColor(
+                                                item.rating
+                                            )}`}
+                                        >
                                             Importance: {item.rating}/5
                                         </p>
 
@@ -190,10 +233,10 @@ const GameResults = ({
                         </div>
                     </div>
 
-                    {/* Action button */}
+                    {/* PLAY AGAIN */}
                     <div className="mt-5 flex justify-center">
                         <button
-                            onClick={onPlayAgain}
+                            onClick={handlePlayAgain}
                             className="flex items-center justify-center gap-2 px-8 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 font-bold text-sm transition shadow-lg shadow-blue-600/20"
                         >
                             <RotateCcw size={17} />
