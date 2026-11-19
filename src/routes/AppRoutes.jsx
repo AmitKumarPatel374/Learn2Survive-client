@@ -21,6 +21,8 @@ import TermsAndConditions from "../pages/public/TermsAndConditions"
 import ContactSupport from "../pages/public/ContactSupport"
 import CreateQuizPage from "../pages/public/CreateQuizPage"
 import AdminRoutes from "./admin.routes"
+import SimulationsRoutes from "./simulations.routes"
+import GamePage from "../pages/simulations/GamePage"
 
 const AppRoutes = () => {
   return (
@@ -77,11 +79,23 @@ const AppRoutes = () => {
           path="/dashboard/*"
           element={<DashboardRoutes />}
         />
+
         <Route
           path="/user/*"
           element={<UserRoutes />}
         />
       </Route>
+
+      {/* Game Routes */}
+      <Route
+        path="game/:gameId"
+        element={
+          <ProtectedRoute>
+            <GamePage />
+          </ProtectedRoute>
+        }
+      ></Route>
+
 
       {/* Auth Layout */}
       <Route element={<AuthLayout />}>
