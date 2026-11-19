@@ -20,6 +20,7 @@ import PrivacyPolicy from "../pages/public/PrivacyPolicy"
 import TermsAndConditions from "../pages/public/TermsAndConditions"
 import ContactSupport from "../pages/public/ContactSupport"
 import CreateQuizPage from "../pages/public/CreateQuizPage"
+import AdminRoutes from "./admin.routes"
 
 const AppRoutes = () => {
   return (
@@ -36,6 +37,10 @@ const AppRoutes = () => {
         path="/contact-support"
         element={<ContactSupport />}
       />
+      <Route
+        path="/admin/*"
+        element={<AdminRoutes />}
+      />
       {/* Main Layout */}
       <Route element={<MainLayout />}>
         <Route
@@ -48,7 +53,7 @@ const AppRoutes = () => {
         />
         <Route
           path="/quiz-create"
-          element={<CreateQuizPage /> }
+          element={<CreateQuizPage />}
         />
         <Route
           path="/learning/*"
